@@ -1,0 +1,369 @@
+<section class="dark:bg-gray-900 flex flex-col gap-4">
+  <div class="flex flex-col lg:flex-row gap-4">
+    <div class="content_container flex-[1]">
+      <h2 class="subhead">Tambahkan transaksi barang</h2>
+      <div
+        class="lg:col-span-4 flex items-center w-full p-4 mb-4 text-sm text-blue-800 rounded-lg bg-blue-50 dark:bg-gray-800 dark:text-blue-400"
+        role="alert">
+        <svg
+          class="flex-shrink-0 inline w-4 h-4 me-3"
+          aria-hidden="true"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="currentColor"
+          viewBox="0 0 20 20">
+          <path
+            d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
+        </svg>
+        <span class="sr-only">Info</span>
+        <div>
+          Kotak booking diisi dengan data booking aktif.
+          <strong>Pastikan dalam 1 transaksi tidak memiliki ID booking yang berbeda-beda.</strong>
+        </div>
+      </div>
+      <form id="form-goods" class="main_form">
+        <div class="flex flex-col gap-4">
+          <div class="relative">
+            <label for="bookings">ID Booking</label>
+            <input
+              autocomplete="off"
+              type="text"
+              id="bookings"
+              placeholder="Masukan masukan data booking"
+              required="" />
+            <div
+              class="absolute top-[4.5rem] rounded-lg bg-white dark:bg-gray-900 dark:text-white z-20 w-full min-h-10 border border-gray-300 hide cursor-pointer"
+              id="bookings-list">
+              <ul></ul>
+            </div>
+          </div>
+          <div class="relative">
+            <label for="goods">ID Barang</label>
+            <input type="text" autocomplete="off" id="goods" placeholder="Masukan nama barang" required="" />
+            <div
+              class="absolute top-[4.5rem] rounded-lg bg-white dark:bg-gray-900 dark:text-white z-20 w-full min-h-10 border border-gray-300 hide cursor-pointer"
+              id="goods-list">
+              <ul></ul>
+            </div>
+          </div>
+          <div>
+            <label for="quantity">Kuantitas</label>
+            <input
+              type="number"
+              id="quantity"
+              autocomplete="off"
+              placeholder="Masukan kuantitas pembelian"
+              required=""
+              value="1" />
+          </div>
+        </div>
+        <button type="submit">Tambah</button>
+      </form>
+    </div>
+    <div class="content_container flex-[2]">
+      <div class="table_container">
+        <table id="table-goods" class="table_fb">
+          <thead class="table_fb__head">
+            <tr>
+              <th scope="col">Nama Barang</th>
+              <th scope="col">Harga (Rp)</th>
+              <th scope="col">Kuantitas</th>
+              <th scope="col">Aksi</th>
+            </tr>
+          </thead>
+          <tbody class="table_fb__body">
+            <tr>
+              <td class="px-6 py-4" colspan="4">Belum ada barang</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div
+        class="w-full justify-end font-bold mt-4 flex gap-4 p-2 border-b-2 border-gray-200 dark:border-gray-700 dark:text-white">
+        <p>TOTAL : Rp</p>
+        <span class="sales-total">0</span>
+      </div>
+      <div class="flex justify-end mt-4">
+        <button
+          type="button"
+          id="settlement-btn"
+          class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+          <svg
+            class="w-3.5 h-3.5 me-2"
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="currentColor"
+            viewBox="0 0 18 21">
+            <path
+              d="M15 12a1 1 0 0 0 .962-.726l2-7A1 1 0 0 0 17 3H3.77L3.175.745A1 1 0 0 0 2.208 0H1a1 1 0 0 0 0 2h.438l.6 2.255v.019l2 7 .746 2.986A3 3 0 1 0 9 17a2.966 2.966 0 0 0-.184-1h2.368c-.118.32-.18.659-.184 1a3 3 0 1 0 3-3H6.78l-.5-2H15Z" />
+          </svg>
+          Selesaikan
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+<script>
+  let sales = []
+  let salesTotal = 0
+
+  // BOOKINGS INFO STUFF
+  const bookingsInputEl = document.querySelector('#bookings')
+  const bookingsListEl = document.querySelector('#bookings-list')
+
+  const addHideClass = (el) => {
+    const element = document.querySelector(el)
+    element.classList.add('hide')
+  }
+  const removeHideClass = (el) => {
+    const element = document.querySelector(el)
+    element.classList.remove('hide')
+  }
+
+  const clickToFillBookingsElValue = (value) => {
+    const goodsInputValue = document.querySelector('#bookings')
+
+    goodsInputValue.value = value
+
+    addHideClass('#bookings-list')
+  }
+
+  const checkIsBookingsAvailable = (arr) => {
+    if (!arr.length) {
+      addHideClass('#bookings-list')
+    } else {
+      removeHideClass('#bookings-list')
+    }
+  }
+
+  const bookingsBySearch = async () => {
+    const bookingsInputValue = document.querySelector('#bookings').value
+    const bookingsListEl = document.querySelector('#bookings-list ul')
+
+    const response = (await axios.get(`/api/bookings/active?search=${bookingsInputValue}`)).data.data
+
+    checkIsBookingsAvailable(response)
+
+    bookingsListEl.innerHTML = ''
+    response.forEach((data) => {
+      bookingsListEl.innerHTML += `
+      <li onClick="clickToFillBookingsElValue('${data.id}')" class="suggestions_list">${data.number}</li>
+        `
+    })
+  }
+
+  bookingsInputEl.addEventListener('input', () => {
+    bookingsBySearch()
+  })
+
+  // CLOSE GOODS LIST OUTSIDE CLICK
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('#bookings-list') && !e.target.closest('#bookings')) {
+      addHideClass('#bookings-list')
+    }
+  })
+
+  // GOODS STUFF
+  const goodsInputEl = document.querySelector('#goods')
+  const goodsListEl = document.querySelector('#goods-list')
+
+  const clickToFillGoodsElValue = (value) => {
+    const goodsInputValue = document.querySelector('#goods')
+
+    goodsInputValue.value = value
+
+    addHideClass('#goods-list')
+  }
+
+  const checkIsGoodsAvailable = (arr) => {
+    if (!arr.length) {
+      addHideClass('#goods-list')
+    } else {
+      removeHideClass('#goods-list')
+    }
+  }
+
+  const goodsBySearch = async () => {
+    const goodsInputValue = document.querySelector('#goods').value
+    const goodsListEl = document.querySelector('#goods-list ul')
+
+    const response = (await axios.get(`/api/goods?search=${goodsInputValue}&limit=5`)).data.data
+
+    checkIsGoodsAvailable(response)
+    goodsListEl.innerHTML = ''
+    response.forEach((data) => {
+      goodsListEl.innerHTML += `
+      <li onClick="clickToFillGoodsElValue('${data.id}')" class="suggestions_list">${data.name}</li>
+        `
+    })
+  }
+
+  goodsInputEl.addEventListener('input', () => {
+    goodsBySearch()
+  })
+
+  // CLOSE GOODS LIST OUTSIDE CLICK
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('#goods-list') && !e.target.closest('#goods')) {
+      addHideClass('#goods-list')
+    }
+  })
+
+  // CURRENCY STUFF
+  const addSeparator = (number) => {
+    const numString = number.toString()
+    const parts = numString.split('.')
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+    const formattedNumber = parts.join('.')
+
+    return formattedNumber
+  }
+  const removeCurrency = (number) => {
+    return parseFloat(number.toString().replace(/\./g, ''))
+  }
+
+  // CHECK WHETER ADD NEW OR UPDATE EXISTING ITEM
+  const addItem = (payload, dbStock) => {
+    const { goods, quantity, booking } = payload
+    const existingItem = sales.find((obj) => obj.goods === goods)
+
+    try {
+      if (existingItem) {
+        existingItem.quantity += Number(quantity)
+        if (dbStock.stock < existingItem?.quantity) {
+          existingItem.quantity -= Number(quantity)
+          throw new Error(`Kuantitas pembelian ${dbStock.name} melebihi ketersediaan stok/stok habis`)
+        }
+        existingItem.booking = booking
+      } else {
+        if (dbStock.stock < quantity) {
+          throw new Error(`Kuantitas pembelian ${dbStock.name} melebihi ketersediaan stok/stok habis`)
+        }
+        sales.push(payload)
+      }
+    } catch (error) {
+      console.log(error)
+      throw new Error(error.message)
+    }
+  }
+
+  // FORM STUFF
+  const formgoods = document.querySelector('#form-goods')
+  formgoods.addEventListener('submit', async (e) => {
+    e.preventDefault()
+    try {
+      const goods = formgoods.querySelector('#goods').value
+      const booking = formgoods.querySelector('#bookings').value
+      const goodsQty = Number(formgoods.querySelector('#quantity').value)
+
+      const goodsDetail = (await axios.get(`/api/goods/${goods}`)).data.data
+      if (!goodsDetail) {
+        throw new Error('Barang tidak ada, silahkan tambahkan barang')
+      }
+
+      const payload = {
+        goods: goodsDetail?.id,
+        name: goodsDetail?.name,
+        booking,
+        price: goodsDetail?.price,
+        quantity: goodsQty
+      }
+
+      addItem(payload, goodsDetail)
+      goodsInputEl.value = ''
+      triggerUpdateCartEvent()
+    } catch (error) {
+      await Swal.fire({
+        title: 'Error!',
+        text: error.message,
+        icon: 'error',
+        confirmButtonText: 'Tutup'
+      })
+    }
+  })
+
+  const triggerUpdateCartEvent = () => {
+    document.dispatchEvent(new Event('update-cart'))
+  }
+
+  const deleteCartItem = (id) => {
+    const salesMapped = sales.filter((sale) => sale.goods !== id)
+    sales = salesMapped
+
+    triggerUpdateCartEvent()
+  }
+
+  document.addEventListener('update-cart', () => {
+    const tableBody = document.querySelector('.table_fb__body')
+    if (sales.length) {
+      tableBody.innerHTML = ''
+      sales.forEach((sale) => {
+        tableBody.innerHTML += `
+        <tr>
+          <td class="px-6 py-4">${sale.name}</td>
+          <td class="px-6 py-4">${addSeparator(sale.price)}</td>
+          <td class="px-6 py-4">${sale.quantity}</td>
+          <td class="px-6 py-4 flex justify-center">
+            <a class="cursor-pointer" onClick="deleteCartItem('${sale.goods}')">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-red-400" viewBox="0 0 256 256">
+                <g fill="currentColor"><path d="M200 56v152a8 8 0 0 1-8 8H64a8 8 0 0 1-8-8V56Z" opacity=".2"/><path d="M216 48h-40v-8a24 24 0 0 0-24-24h-48a24 24 0 0 0-24 24v8H40a8 8 0 0 0 0 16h8v144a16 16 0 0 0 16 16h128a16 16 0 0 0 16-16V64h8a8 8 0 0 0 0-16M96 40a8 8 0 0 1 8-8h48a8 8 0 0 1 8 8v8H96Zm96 168H64V64h128Zm-80-104v64a8 8 0 0 1-16 0v-64a8 8 0 0 1 16 0m48 0v64a8 8 0 0 1-16 0v-64a8 8 0 0 1 16 0"/></g>
+              </svg>
+            </a>
+          </td>
+        </tr>
+        `
+      })
+    } else {
+      tableBody.innerHTML = `
+      <tr>
+        <td class="px-6 py-4" colspan="4">Belum ada barang</td>
+      </tr>
+      `
+    }
+
+    const salesTotalEl = document.querySelector('.sales-total')
+    salesTotal = sales.reduce((a, b) => {
+      return a + b.price * b.quantity
+    }, 0)
+
+    salesTotalEl.innerHTML = addSeparator(salesTotal)
+  })
+
+  document.addEventListener('DOMContentLoaded', () => {
+    triggerUpdateCartEvent()
+  })
+
+  // SETTLEMENT
+  const settlementBtn = document.querySelector('#settlement-btn')
+  settlementBtn.addEventListener('click', async () => {
+    const { isConfirmed } = await Swal.fire({
+      title: 'Yakin menyelesaikan transaksi?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Tambahkan'
+    })
+
+    if (isConfirmed) {
+      try {
+        await axios.post('/api/sales', { sales })
+        await Swal.fire({
+          title: 'Berhasil!',
+          text: 'Transaksi berhasil diselesaikan',
+          icon: 'success',
+          confirmButtonText: 'Oke!'
+        })
+        sales = []
+        location.reload()
+      } catch (error) {
+        const errMessage = error.response.data.message
+        await Swal.fire({
+          title: 'Error!',
+          text: errMessage,
+          icon: 'error',
+          confirmButtonText: 'Tutup'
+        })
+      }
+    }
+  })
+</script>

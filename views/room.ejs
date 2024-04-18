@@ -1,0 +1,158 @@
+<section class="dark:bg-gray-900 flex flex-col gap-4">
+  <div class="content_container">
+    <h2 class="mb-4 text-xl font-bold text-gray-900 dark:text-white">Tambahkan kamar baru</h2>
+    <form id="form-category" class="main_form">
+      <div class="grid gap-4 sm:grid-cols-2 sm:gap-6">
+        <div class="sm:col-span-1">
+          <label for="room-number">Nomor Kamar</label>
+          <input type="number" name="room-number" id="room-number" placeholder="Masukan nomor kamar" required="" />
+        </div>
+        <div class="sm:col-span-1">
+          <label for="room-cats">Kategori Kamar</label>
+          <select id="room-cats">
+            <option selected>-- Pilih --</option>
+          </select>
+        </div>
+        <div class="sm:col-span-1">
+          <label for="room-smoke">Jenis Kamar</label>
+          <select id="room-smoke">
+            <option value="0" selected>Non-Smoking</option>
+            <option value="1">Smoking</option>
+          </select>
+        </div>
+        <div class="sm:col-span-1">
+          <label for="room-bed">Jenis Tempat Tidur</label>
+          <select id="room-bed">
+            <option value="Single" selected>Single</option>
+            <option value="Double">Double</option>
+            <option value="Twin">Twin</option>
+            <option value="King Size">King Size</option>
+          </select>
+        </div>
+      </div>
+      <button type="submit">Tambah</button>
+    </form>
+  </div>
+  <div class="content_container">
+    <h2 class="subhead">Daftar kamar</h2>
+    <%- include('partials/rooms-table-header') %>
+    <div class="table_container">
+      <table id="table-rooms" class="table_fb">
+        <thead class="table_fb__head">
+          <tr>
+            <th scope="col">Nomor</th>
+            <th scope="col">Kategori</th>
+            <th scope="col">Harga (Rp)</th>
+            <th scope="col">Jenis Kamar</th>
+            <th scope="col">Jenis Tempat Tidur</th>
+            <th scope="col">Kondisi Kamar</th>
+            <th scope="col">Ketersediaan</th>
+            <th scope="col">Aksi</th>
+          </tr>
+        </thead>
+        <tbody class="table_fb__body">
+          <% if (rooms.length) { %> <% rooms.forEach(room => { %>
+          <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+            <td class="px-6 py-4"><%= room.number %></td>
+            <td class="px-6 py-4"><%= room.category %></td>
+            <td class="px-6 py-4"><%= addSeparator(room.price) %></td>
+            <td class="px-6 py-4"><%= room.smoking ? 'Smoking' : 'Non-Smoking' %></td>
+            <td class="px-6 py-4"><%= room.bed %></td>
+            <td class="px-6 py-4">
+              <% if (room.cleaned) { %>
+              <span
+                class="bg-indigo-100 text-indigo-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-full dark:bg-indigo-900 dark:text-indigo-300"
+                >Bersih</span
+              >
+              <% } else {%>
+              <span
+                class="bg-red-100 text-red-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-full dark:bg-red-900 dark:text-red-300"
+                >Kotor</span
+              >
+              <% }%>
+            </td>
+            <td class="px-6 py-4"><%= room.available ? 'Tersedia' : 'Tidak' %></td>
+            <td class="px-6 py-4"><a class="text-blue-600 hover:underline" href="/room/<%= room.id %>">Edit</a></td>
+          </tr>
+          <% }) %> <% } else {%>
+          <tr>
+            <td colspan="7">Tidak ada data</td>
+          </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+<script>
+  document.addEventListener('DOMContentLoaded', async () => {
+    const addSeparator = (number) => {
+      const numString = number.toString()
+      const parts = numString.split('.')
+      parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+      const formattedNumber = parts.join('.')
+
+      return formattedNumber
+    }
+
+    // LOAD ROOM CATS
+    let roomCats = []
+    const response = await axios.get('/api/rooms/category')
+    roomCats = response.data.data.categories
+
+    const roomCatsEl = document.querySelector('#room-cats')
+    roomCats.forEach((data) => {
+      const element = `
+        <option value="${data.id}">${data.category} / ${addSeparator(data.price)}</option>
+        `
+      roomCatsEl.innerHTML += element
+    })
+
+    // FORM STUFF
+    const formCategory = document.querySelector('#form-category')
+    formCategory.addEventListener('submit', async (e) => {
+      e.preventDefault()
+      const roomNumber = formCategory.querySelector('#room-number').value
+      const roomCat = formCategory.querySelector('#room-cats').value
+      const roomSmoke = formCategory.querySelector('#room-smoke').value
+      const roomBed = formCategory.querySelector('#room-bed').value
+
+      const payload = {
+        number: roomNumber,
+        category: roomCat,
+        smoking: Boolean(Number(roomSmoke)),
+        bed: roomBed
+      }
+
+      const { isConfirmed } = await Swal.fire({
+        title: 'Yakin menambahkan kamar baru?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Tambahkan'
+      })
+
+      if (isConfirmed) {
+        try {
+          await axios.post('/api/rooms', payload)
+          await Swal.fire({
+            title: 'Berhasil!',
+            text: 'Anda berhasil menambahkan kamar baru',
+            icon: 'success',
+            confirmButtonText: 'Oke!'
+          })
+          location.reload()
+        } catch (error) {
+          const errMessage = error.response.data.message
+          await Swal.fire({
+            title: 'Error!',
+            text: errMessage,
+            icon: 'error',
+            confirmButtonText: 'Tutup'
+          })
+        }
+      }
+    })
+  })
+</script>

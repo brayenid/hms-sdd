@@ -1,0 +1,68 @@
+<section class="dark:bg-gray-900 flex flex-col gap-4">
+  <div class="content_container">
+    <h2 class="subhead">Daftar Check-In Yang Akan Datang</h2>
+    <%- include('partials/checkin-table-header') %>
+    <div class="table_container">
+      <table id="table-cats" class="table_fb">
+        <thead class="table_fb__head">
+          <tr>
+            <th scope="col">Dipesan Oleh</th>
+            <th scope="col">Kamar</th>
+            <th scope="col">Check In</th>
+            <th scope="col">Check Out</th>
+            <th scope="col">Pembayaran</th>
+            <th scope="col">Aksi</th>
+          </tr>
+        </thead>
+        <tbody class="table_fb__body">
+          <tr>
+            <td class="px-6 py-4" colspan="7">Memuat...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+<script>
+  document.addEventListener('DOMContentLoaded', async () => {
+    // LOAD BOOKINGS
+    const isSettled = (paid, price) => {
+      if (paid === price) {
+        return true
+      }
+      return false
+    }
+
+    let bookings = []
+    const response = await axios.get(
+      '/api/bookings/checkin?search=<%= query.search %>&start=<%= query.start %>&end=<%= query.end %>'
+    )
+    bookings = response.data.data
+    console.log(bookings)
+    const tableBody = document.querySelector('#table-cats tbody')
+    if (bookings.length) {
+      tableBody.innerHTML = ''
+      bookings.forEach((data) => {
+        console.log(data)
+        const element = `
+          <tr>
+            <td>${data.bookedBy}</td>
+            <td>${data.room}</td>
+            <td>${data.startDate.split('-').reverse().join('-')}</td>
+            <td>${data.endDate.split('-').reverse().join('-')}</td>
+            <td>${isSettled(data.paid, data.totalRoom + data.totalExtra - data.discount) ? 'Lunas' : 'Belum Lunas'}</td>
+            <td><a class="text-blue-500 hover:underline" href="/checkin/${data.id}">Check-In</a></td>
+          </tr>
+          `
+        tableBody.innerHTML += element
+      })
+    } else {
+      const element = `
+          <tr>
+            <td colspan="7">Tidak ada data !</td>
+          </tr>
+          `
+      tableBody.innerHTML = element
+    }
+  })
+</script>

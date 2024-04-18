@@ -1,0 +1,72 @@
+<div class="w-full">
+  <%- include('partials/room-transaction-logs-header-print.ejs') %>
+  <h1 class="text-xl font-bold text-center mb-1 mt-4">Log Transaksi Kamar</h1>
+  <p class="text-center mb-4 text-xs"><%= new Date() %></p>
+  <div class="overflow-x-auto max-w-5xl mx-auto">
+    <table class="w-full text-gray-700 dark:text-white text-xs">
+      <thead class="text-left">
+        <tr>
+          <th class="py-2 px-4 border-b">ID Booking</th>
+          <th class="py-2 px-4 border-b">Terbayar</th>
+          <th class="py-2 px-4 border-b">Settled</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (roomTransactionLogs.length) { %> <% roomTransactionLogs.forEach(log => { %>
+        <tr>
+          <td class="py-2 px-4 border-b"><%= log.booking %></td>
+          <td class="py-2 px-4 border-b"><%= addSeparator(log.paid) %></td>
+          <td class="py-2 px-4 border-b">
+            <%= log.date.toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: '2-digit' }) %>
+          </td>
+        </tr>
+        <% }) %> <% } else { %>
+
+        <tr>
+          <td class="py-2 border-b text-center" colspan="3">Tidak ada data</td>
+        </tr>
+        <% } %>
+        <tr>
+          <td class="py-2 px-4 border-b text-center" colspan="1">Total</td>
+          <td class="py-2 px-4 border-b" colspan="2"><%= addSeparator(total) %></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<script>
+  const transactions = JSON.parse('<%- JSON.stringify(roomTransactionLogs) %>')
+  console.log(transactions)
+  const transactionsMapped = transactions.map((trans) => {
+    return {
+      booking: trans.booking,
+      paid: trans.paid,
+      date: trans.date
+    }
+  })
+  const toCsv = () => {
+    const header = Object.keys(transactionsMapped[0]).join(',')
+
+    const mains = transactionsMapped.map((transaction) => {
+      return Object.values(transaction).join(',')
+    })
+
+    const csv = [header, ...mains].join('\n')
+    csvDownload(csv)
+  }
+
+  const csvDownload = (data) => {
+    const blob = new Blob([data], { type: 'application/csv' })
+    const url = URL.createObjectURL(blob)
+
+    const a = document.createElement('a')
+    a.download = `room-transaction-logs-reports-${Date.now()}.csv`
+    a.href = url
+    a.style.display = 'none'
+
+    document.body.appendChild(a)
+    a.click()
+    a.remove()
+    URL.revokeObjectURL(url)
+  }
+</script>

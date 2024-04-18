@@ -1,0 +1,41 @@
+<div class="flex justify-center no-print pb-4"><%- include('partials/logistic-log-header-print.ejs') %></div>
+<div class="w-full max-w-5xl mx-auto">
+  <h1 class="text-xl font-bold text-center mb-1 mt-4">Riwayat Saldo</h1>
+  <p class="text-center mb-4 text-xs"><%= new Date() %></p>
+  <div class="overflow-x-auto">
+    <table class="w-full text-gray-700 dark:text-white text-xs text-left">
+      <thead>
+        <tr>
+          <th scope="col">Detail</th>
+          <th scope="col">Jumlah</th>
+          <th scope="col">Aksi</th>
+          <th scope="col">Saldo Terakhir</th>
+          <th scope="col">Tanggal</th>
+          <th scope="col">Admin</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (balanceLogs.length) { %> <% balanceLogs.forEach(balance => { %>
+        <tr>
+          <td class="py-2 border-b"><%= balance.detail %></td>
+          <td class="py-2 border-b"><%= addSeparator(balance.amount) %></td>
+          <td class="py-2 border-b">
+            <% if (balance.action === 'add') { %>
+            <span class="text-emerald-500">Add</span>
+            <% } else {%>
+            <span class="text-red-500">Min</span>
+            <% } %>
+          </td>
+          <td class="py-2 border-b"><%= addSeparator(balance.lastBalance) %></td>
+          <td class="py-2 border-b"><%= moment(balance.createdAt).format('LLL') %></td>
+          <td class="py-2 border-b"><%= balance.admin %></td>
+        </tr>
+        <% }) %> <% } else { %>
+        <tr>
+          <td class="py-2 border-b text-center" colspan="6">Tidak ada data</td>
+        </tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+</div>

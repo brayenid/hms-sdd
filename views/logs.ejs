@@ -1,0 +1,68 @@
+<div class="content_container">
+  <div class="flex flex-col lg:flex-row lg:justify-between">
+    <div class="flex-[1]">
+      <h2 class="subhead mb-2">Logs</h2>
+      <p class="text-sm dark:text-white">Logs akan terhapus jika lebih dari 1 minggu.</p>
+    </div>
+    <div class="flex-[1]"><%- include('partials/logs-header.ejs') %></div>
+  </div>
+  <div class="table_container w-full">
+    <table class="table_fb">
+      <thead class="table_fb__head">
+        <tr>
+          <th scope="col">Case</th>
+          <th scope="col">Admin</th>
+          <th scope="col">Tanggal</th>
+        </tr>
+      </thead>
+      <tbody class="table_fb__body">
+        <% if (logs.length) { %> <% logs.forEach(log => { %>
+        <tr>
+          <td class="px-2 py-2 !text-left"><%= log.cases %></td>
+          <td class="px-2 py-2"><%= log.createdBy %></td>
+          <td class="px-2 py-2 !text-left"><%= moment(log.createdAt).format('MMMM Do YYYY, h:mm:ss a') %></td>
+        </tr>
+        <% }) %> <% } else { %>
+        <tr>
+          <td colspan="3">Tidak ada data</td>
+        </tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+</div>
+<script>
+  const deleteLogs = async () => {
+    const { isConfirmed } = await Swal.fire({
+      title: 'Penghapusan Logs',
+      text: 'Tindakan penghapusan ini tidak dapat dikembalikan, yakin menghapus seluruh logs?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Hapus',
+      cancelButtonText: 'Batal'
+    })
+
+    if (isConfirmed) {
+      try {
+        await axios.delete('/api/logs')
+        await Swal.fire({
+          title: 'Berhasil!',
+          text: 'Anda berhasil menghapus semua logs',
+          icon: 'success',
+          confirmButtonText: 'Oke!'
+        })
+        location.replace('/log')
+      } catch (error) {
+        const errMessage = error.response.data.message
+        await Swal.fire({
+          title: 'Error!',
+          text: errMessage,
+          icon: 'error',
+          confirmButtonText: 'Tutup'
+        })
+      }
+    }
+  }
+</script>

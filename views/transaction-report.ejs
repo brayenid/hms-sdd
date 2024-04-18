@@ -1,0 +1,94 @@
+<div class="flex flex-col gap-4">
+  <div class="flex flex-col md:flex-row gap-4">
+    <div class="content_container"><%- include('partials/transactions-chart.ejs') %></div>
+    <div class="content_container"><%- include('partials/transactions-chart-total.ejs') %></div>
+  </div>
+
+  <div class="content_container w-full">
+    <h2 class="subhead">Laporan Transaksi Kamar</h2>
+
+    <%- include('partials/transactions-report-header.ejs') %>
+    <div class="overflow-x-auto">
+      <table class="w-full text-gray-700 dark:text-white text-xs">
+        <thead>
+          <tr>
+            <th class="py-2 px-4 border-b dark:border-gray-600">Invoice</th>
+            <th class="py-2 px-4 border-b dark:border-gray-600">Transaksi</th>
+            <th class="py-2 px-4 border-b dark:border-gray-600">Asal</th>
+            <th class="py-2 px-4 border-b dark:border-gray-600">Check In</th>
+            <th class="py-2 px-4 border-b dark:border-gray-600">Check Out</th>
+            <th class="py-2 px-4 border-b dark:border-gray-600">Room</th>
+            <th class="py-2 px-4 border-b dark:border-gray-600">Extra</th>
+            <th class="py-2 px-4 border-b dark:border-gray-600">Fines</th>
+            <th class="py-2 px-4 border-b dark:border-gray-600">Sales</th>
+            <th class="py-2 px-4 border-b dark:border-gray-600">Discount</th>
+            <th class="py-2 px-4 border-b dark:border-gray-600">Grand Total</th>
+            <th class="py-2 px-4 border-b dark:border-gray-600">Settled Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (reports.length) { %> <% reports.forEach(report => { %>
+          <tr>
+            <td class="py-2 px-4 border-b dark:border-gray-600">
+              <a class="text-blue-500 hover:underline" href="/transaction/<%= report.id %>"><%= report.id %></a>
+            </td>
+            <td class="py-2 px-4 border-b dark:border-gray-600">Room # <%= report.number %></td>
+            <td class="py-2 px-4 border-b dark:border-gray-600"><%= report.source %></td>
+            <td class="py-2 px-4 border-b dark:border-gray-600">
+              <%= report.startDate.split('-').reverse().join('-') %>
+            </td>
+            <td class="py-2 px-4 border-b dark:border-gray-600">
+              <%= report.endDate.split('-').reverse().join('-') %>
+            </td>
+            <td class="py-2 px-4 border-b dark:border-gray-600"><%= addSeparator(report.totalRoom) %></td>
+            <td class="py-2 px-4 border-b dark:border-gray-600"><%= addSeparator(report.totalExtra) %></td>
+            <td class="py-2 px-4 border-b dark:border-gray-600"><%= addSeparator(report.totalFines) %></td>
+            <td class="py-2 px-4 border-b dark:border-gray-600"><%= addSeparator(report.totalSales) %></td>
+            <td class="py-2 px-4 border-b dark:border-gray-600"><%= addSeparator(report.discount) %></td>
+            <td class="py-2 px-4 border-b dark:border-gray-600"><%= addSeparator(report.grandTotal) %></td>
+            <td class="py-2 px-4 border-b dark:border-gray-600">
+              <%= report.settledDate.toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: '2-digit' })
+              %>
+            </td>
+          </tr>
+          <% }) %> <% } else { %>
+          <tr>
+            <td class="py-2 px-4 border-b text-center dark:border-gray-600" colspan="12">Tidak ada data</td>
+          </tr>
+          <% } %>
+          <td class="py-2 px-4 border-b text-center dark:border-gray-600" colspan="10">Total</td>
+          <td class="py-2 px-4 border-b dark:border-gray-600" colspan="2"><%= addSeparator(total) %></td>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<script>
+  const transactions = JSON.parse('<%- JSON.stringify(reports) %>')
+
+  const toCsv = () => {
+    const header = Object.keys(transactions[0]).join(',')
+
+    const mains = transactions.map((transaction) => {
+      return Object.values(transaction).join(',')
+    })
+
+    const csv = [header, ...mains].join('\n')
+    csvDownload(csv)
+  }
+
+  const csvDownload = (data) => {
+    const blob = new Blob([data], { type: 'application/csv' })
+    const url = URL.createObjectURL(blob)
+
+    const a = document.createElement('a')
+    a.download = `transaction-reports-${Date.now()}.csv`
+    a.href = url
+    a.style.display = 'none'
+
+    document.body.appendChild(a)
+    a.click()
+    a.remove()
+    URL.revokeObjectURL(url)
+  }
+</script>

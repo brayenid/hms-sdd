@@ -1,0 +1,45 @@
+<% if (!bookingSource.length) { %>
+<p class="w-full text-sm text-center text-gray-400 dark:text-gray-200 border border-gray-200 p-2 rounded-md">
+  Belum ada data
+</p>
+<% } else { %>
+<div id="booking-source-chart"></div>
+<% } %>
+<script>
+  const chartContainer = document.querySelector('#booking-source-chart')
+  const data = JSON.parse('<%- JSON.stringify(bookingSource) %>')
+
+  const seriesData = data.map((item) => parseInt(item.frekuensi))
+  const labelsData = data.map((item) => item.source)
+
+  const options = {
+    series: seriesData,
+    chart: {
+      width: 350,
+      type: 'pie'
+    },
+    labels: labelsData,
+    legend: {
+      position: 'bottom'
+    },
+    responsive: [
+      {
+        breakpoint: 480,
+        options: {
+          chart: {
+            width: 200
+          },
+          legend: {
+            position: 'bottom'
+          }
+        }
+      }
+    ]
+  }
+
+  if (data.length) {
+    // Membuat chart dengan menggunakan opsi yang sudah diubah
+    const chart = new ApexCharts(chartContainer, options)
+    chart.render()
+  }
+</script>

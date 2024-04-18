@@ -1,0 +1,196 @@
+<style>
+  /* Media query untuk tampilan cetak */
+  @media print {
+    .no-print {
+      display: none;
+    }
+    @page {
+      margin-top: 0;
+      margin-bottom: 0;
+    }
+    .print-control {
+      display: none;
+    }
+    .print-area {
+      display: none;
+    }
+  }
+</style>
+<div class="max-w-[85rem] mx-auto">
+  <!-- Buttons -->
+  <div class="mt-6 flex justify-end gap-x-3 no-print">
+    <a
+      class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600 cursor-pointer"
+      onClick="printDocument()">
+      <svg
+        class="flex-shrink-0 w-4 h-4"
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round">
+        <polyline points="6 9 6 2 18 2 18 9" />
+        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+        <rect width="12" height="8" x="6" y="14" />
+      </svg>
+      Print
+    </a>
+    <a
+      href="/transaction"
+      class="flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-white bg-orange-700 border border-gray-200 rounded-lg md:w-auto focus:outline-none hover:bg-orange-800 hover:text-white focus:ring-4 focus:ring-orange-200 dark:focus:ring-orange-900 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
+      Kembali
+    </a>
+  </div>
+  <!-- End Buttons -->
+  <div class="mx-auto">
+    <!-- Card -->
+    <div class="flex flex-col p-4 sm:p-10">
+      <!-- Grid -->
+      <div class="flex justify-between">
+        <div>
+          <div class="max-w-36">
+            <img src="/logo.png" alt="" />
+          </div>
+          <h1 class="mt-2 text-lg md:text-xl font-semibold text-red-600"><%= hotel.name %></h1>
+        </div>
+        <!-- Col -->
+
+        <div class="text-end">
+          <h2 class="text-lg font-semibold text-gray-800">GUEST BILL #</h2>
+          <p class="block text-gray-500 text-xs">No. <%= transaction.id %></p>
+          <p class="block text-gray-500 text-xs">Settled Date. <%= moment(transaction.settledDate).format('LLL') %></p>
+
+          <address class="mt-2 not-italic text-xs text-gray-800">
+            <%= hotel.address %>, <%= hotel.city %>, <%= hotel.zip %>
+          </address>
+          <p class="text-xs"><%= hotel.phone %></p>
+        </div>
+        <!-- Col -->
+      </div>
+      <!-- End Grid -->
+
+      <!-- Grid -->
+      <div class="mt-8 grid sm:grid-cols-2 gap-3">
+        <div>
+          <h3 class="text-gray-800 text-xs">Guest Name</h3>
+          <h3 class="text-sm font-semibold text-gray-800"><%= transaction.name %></h3>
+          <address class="mt-2 not-italic text-gray-500 text-xs">
+            <%= transaction.address %>,<br />
+            <%= transaction.city %>.<br />
+          </address>
+        </div>
+        <!-- Col -->
+
+        <div class="sm:text-end space-y-2">
+          <!-- Grid -->
+          <div class="grid grid-cols-2 sm:grid-cols-1 gap-3 sm:gap-2 text-xs">
+            <dl class="grid sm:grid-cols-5 gap-x-3">
+              <dt class="col-span-3 font-semibold text-gray-800">Room:</dt>
+              <dd class="col-span-2 text-gray-500"><%= transaction.number %></dd>
+            </dl>
+            <dl class="grid sm:grid-cols-5 gap-x-3">
+              <dt class="col-span-3 font-semibold text-gray-800">Arrival:</dt>
+              <dd class="col-span-2 text-gray-500">
+                <%= moment(new Date(transaction.startDate)).format('DD MMMM YYYY') %>
+              </dd>
+            </dl>
+            <dl class="grid sm:grid-cols-5 gap-x-3">
+              <dt class="col-span-3 font-semibold text-gray-800">Departure:</dt>
+              <dd class="col-span-2 text-gray-500">
+                <%= moment(new Date(transaction.endDate)).format('DD MMMM YYYY') %>
+              </dd>
+            </dl>
+          </div>
+          <!-- End Grid -->
+        </div>
+        <!-- Col -->
+      </div>
+      <!-- End Grid -->
+
+      <!-- Table -->
+      <table class="min-w-full border text-xs text-left border-gray-300 my-4">
+        <thead>
+          <tr>
+            <th class="py-1 px-4 border-b">Item</th>
+            <th class="py-1 px-4 border-b">Qty</th>
+            <th class="py-1 px-4 border-b">Amount (Rp)</th>
+            <th class="py-1 px-4 border-b"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Baris Tabel - Ganti dengan data yang sesuai -->
+          <tr>
+            <td class="py-1 px-4 border-b">
+              Room <%= transaction.category %> <%= transaction.bed.charAt(0).toUpperCase() + transaction.bed.slice(1) %>
+              # <%= transaction.number %>
+            </td>
+            <td class="py-1 px-4 border-b"><%= calculateNights(transaction.startDate, transaction.endDate) %></td>
+            <td class="py-1 px-4 border-b"><%= addSeparator(transaction.roomPrice) %></td>
+            <td class="py-1 px-4 border-b"></td>
+          </tr>
+          <% if (transaction.totalExtra) { %>
+          <tr>
+            <td class="py-1 px-4 border-b">Extra</td>
+            <td class="py-1 px-4 border-b">1</td>
+            <td class="py-1 px-4 border-b"><%= addSeparator(transaction.totalExtra) %></td>
+          </tr>
+          <% } %> <% if (transaction.totalFines) { %>
+          <tr>
+            <td class="py-1 px-4 border-b">Fines</td>
+            <td class="py-1 px-4 border-b">1</td>
+            <td class="py-1 px-4 border-b"><%= addSeparator(transaction.totalFines) %></td>
+          </tr>
+          <% } %> <% if (transaction.totalSales) { %>
+          <tr>
+            <td class="py-1 px-4 border-b">POS Transactions</td>
+            <td class="py-1 px-4 border-b">1</td>
+            <td class="py-1 px-4 border-b"><%= addSeparator(transaction.totalSales) %></td>
+          </tr>
+          <% } %>
+          <tr>
+            <td class="py-1 px-4 border-b text-left italic" colspan="3">Main Room Total</td>
+            <td class="py-1 px-4 border-b font-bold" colspan="1">
+              <%= addSeparator(transaction.totalRoom + transaction.totalExtra + transaction.totalFines +
+              transaction.totalSales) %>
+            </td>
+          </tr>
+          <tr>
+            <td class="py-1 px-4 border-b text-left" colspan="3">Discount</td>
+            <td class="py-1 px-4 border-b font-bold" colspan="1">
+              <%= transaction.discount < 1 ? addSeparator(transaction.discount) : '- ' +
+              addSeparator(transaction.discount) %>
+            </td>
+          </tr>
+          <tr>
+            <td class="py-1 px-4 border-b text-center" colspan="3">Total</td>
+            <td class="py-1 px-4 border-b font-bold" colspan="1">
+              <%= addSeparator(transaction.paid + transaction.totalSales) %>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <!-- End Table -->
+
+      <div class="flex gap-40 text-xs justify-end">
+        <div class="text-center">
+          <p>Guest Signature</p>
+          <p class="mt-10">(<%= capitalized(transaction.name) %>)</p>
+        </div>
+        <div class="text-center">
+          <p>Cashier</p>
+          <p class="mt-10">(<%= capitalized(transaction.adminName) %>)</p>
+        </div>
+      </div>
+    </div>
+    <!-- End Card -->
+  </div>
+</div>
+<script>
+  const printDocument = () => {
+    window.print()
+  }
+</script>

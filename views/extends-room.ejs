@@ -1,0 +1,201 @@
+<section class="dark:bg-gray-900 flex flex-col gap-4">
+  <h2 class="dark:text-white">Atur Durasi Menginap :</h2>
+  <div class="content_container">
+    <div
+      class="lg:col-span-4 flex items-center w-full p-4 mb-4 text-sm text-blue-800 rounded-lg bg-blue-50 dark:bg-gray-800 dark:text-blue-400"
+      role="alert">
+      <svg
+        class="flex-shrink-0 inline w-4 h-4 me-3"
+        aria-hidden="true"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="currentColor"
+        viewBox="0 0 20 20">
+        <path
+          d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
+      </svg>
+      <span class="sr-only">Info</span>
+      <div>
+        <span class="font-medium">Info!</span>
+        Pastikan bahwa kamar tersedia dengan menekan tombol "Cek Ketersediaan" setelah memilih tanggal keluar.
+        <strong>Hanya tanggal keluar yang dapat diubah!</strong>.
+      </div>
+    </div>
+    <form id="form-booking" class="main_form flex-[2]">
+      <div class="grid gap-4 lg:grid-cols-4 lg:gap-6">
+        <div class="lg:col-span-2">
+          <label for="check-in">Tanggal Check-In</label>
+          <input
+            type="date"
+            id="check-in"
+            placeholder="Masukan tanggal Check-In"
+            required=""
+            value="<%= detail.startDate %>"
+            disabled />
+        </div>
+        <div class="lg:col-span-2">
+          <label for="check-out">Tanggal Check-Out</label>
+          <input
+            type="date"
+            id="check-out"
+            placeholder="Masukan tanggal Check-Out"
+            value="<%= detail.endDate %>"
+            required="" />
+        </div>
+        <div class="lg:col-span-4 flex items-center flex-col lg:flex-row gap-2">
+          <label for="room-number" class="flex-[1]">Nomor Kamar</label>
+          <input
+            autocomplete="off"
+            type="text"
+            id="room-number"
+            value="<%= detail.roomNumber  %>"
+            disabled
+            class="flex-[4] input-disable" />
+        </div>
+        <div class="lg:col-span-4 flex items-center flex-col lg:flex-row gap-2">
+          <label for="room-guest" class="flex-[1]">Nama Tamu</label>
+          <input
+            autocomplete="off"
+            type="text"
+            id="room-guest"
+            value="<%= detail.guestName  %>"
+            disabled
+            class="flex-[4] input-disable" />
+        </div>
+        <div class="lg:col-span-4 flex items-center flex-col lg:flex-row gap-2">
+          <label for="room-night" class="flex-[1]">Jumlah Malam Tambahan</label>
+          <input
+            autocomplete="off"
+            type="text"
+            id="room-night"
+            value="0"
+            required=""
+            disabled
+            class="flex-[4] input-disable" />
+        </div>
+        <div class="lg:col-span-4 flex items-center flex-col lg:flex-row gap-2">
+          <label for="room-paid-add" class="flex-[1]">Harga Kamar Tambahan</label>
+          <input
+            autocomplete="off"
+            type="text"
+            id="room-paid-add"
+            value="0"
+            required=""
+            disabled
+            class="flex-[4] input-disable" />
+        </div>
+      </div>
+      <button type="submit">Ubah</button>
+      <button type="button" class="purple" id="fifty-percent" onclick="checkAvailability()">Cek Ketersediaan</button>
+      <a
+        href="/checkout/<%= detail.id %>"
+        class="px-4 py-3 text-sm font-medium text-white bg-rose-700 rounded-lg md:w-auto focus:outline-none hover:bg-rose-800 hover:text-white focus:ring-4 focus:ring-rose-200 dark:focus:ring-rose-900 dark:bg-gray-900 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
+        Kembali
+      </a>
+    </form>
+  </div>
+</section>
+<script>
+  const bookingId = '<%= detail.id %>'
+  const initialStartDate = '<%= detail.startDate %>'
+  const initialNightGap = '<%= initialNight %>'
+  const roomPrice = Number('<%= price %>')
+
+  let addPrice = 0
+  let nightGapValue = 0
+
+  document.querySelector('#check-out').addEventListener('change', (e) => {
+    nightGapValue = calculateNights(initialStartDate, e.target.value) - initialNightGap
+
+    document.dispatchEvent(new Event('update-extend'))
+  })
+
+  const addSeparator = (number) => {
+    const numString = number.toString()
+    const parts = numString.split('.')
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+    const formattedNumber = parts.join('.')
+
+    return formattedNumber
+  }
+
+  document.addEventListener('update-extend', () => {
+    document.querySelector('#room-night').value = nightGapValue
+    document.querySelector('#room-paid-add').value = addSeparator(roomPrice * nightGapValue)
+  })
+
+  const calculateNights = (start, end) => {
+    return Math.ceil((new Date(end) - new Date(start)) / (1000 * 60 * 60 * 24))
+  }
+
+  const checkAvailability = async () => {
+    const endDate = document.querySelector('#check-out').value
+
+    const datas = (
+      await axios.get(`/api/bookings/availability/extends/<%= detail.id %>?start=${initialStartDate}&end=${endDate}`)
+    ).data.data
+
+    try {
+      const isAvailable = datas.filter((data) => data.id === '<%= detail.room %>')
+      if (isAvailable.length > 0) {
+        Swal.fire({
+          title: 'Tersedia',
+          icon: 'success',
+          text: 'Kamar ini tersedia untuk tanggal tersebut'
+        })
+      } else {
+        throw new Error('Kamar ini tidak tersedia untuk tanggal tersebut')
+      }
+    } catch (error) {
+      Swal.fire({
+        title: 'Tidak Tersedia',
+        icon: 'error',
+        text: error.message
+      })
+    }
+  }
+
+  document.querySelector('#form-booking').addEventListener('submit', async (e) => {
+    e.preventDefault()
+
+    const startDate = document.querySelector('#check-in').value
+    const endDate = document.querySelector('#check-out').value
+
+    const payload = {
+      startDate,
+      endDate,
+      bookingId,
+      roomPrice: roomPrice * nightGapValue,
+      roomId: '<%= detail.room %>'
+    }
+
+    const { isConfirmed } = await Swal.fire({
+      title: 'Pembaharuan Durasi',
+      text: 'Yakin memperbaharui durasi menginap tamu?',
+      icon: 'question',
+      showConfirmButton: true,
+      confirmButtonText: 'Simpan',
+      showCancelButton: true,
+      cancelButtonText: 'Batal'
+    })
+
+    if (isConfirmed) {
+      try {
+        const { message } = (await axios.patch('/api/bookings/extends/room', payload)).data
+
+        await Swal.fire({
+          title: 'Berhasil',
+          text: `${message}, tambahan harga kamar akan muncul di halaman check-out.`,
+          icon: 'success'
+        })
+
+        location.reload()
+      } catch (error) {
+        Swal.fire({
+          title: 'Error',
+          text: error.response.data.message,
+          icon: 'error'
+        })
+      }
+    }
+  })
+</script>

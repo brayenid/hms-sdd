@@ -1,0 +1,559 @@
+<section class="dark:bg-gray-900 flex flex-col gap-4">
+  <h2 class="text-lg dark:text-white">Detail Check-In Pada :</h2>
+  <div class="content_container !p-0 !border-0">
+    <div class="flex justify-between items-center indigo-pink rounded-lg">
+      <h3 class="text-lg sm:text-2xl text-center w-full py-10 text-white font-extrabold">
+        <span class="text-white/50">IN : </span> <%= detail.startDateReverse %>
+      </h3>
+      <p>
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-white" viewBox="0 0 256 256">
+          <path
+            fill="currentColor"
+            d="m181.66 133.66l-80 80a8 8 0 0 1-11.32-11.32L164.69 128L90.34 53.66a8 8 0 0 1 11.32-11.32l80 80a8 8 0 0 1 0 11.32" />
+        </svg>
+      </p>
+      <h3 class="text-lg sm:text-2xl text-center w-full ] py-10 text-white font-extrabold">
+        <span class="text-white/50">OUT : </span> <%= detail.endDateReverse %>
+      </h3>
+    </div>
+  </div>
+  <div class="content_container flex flex-col lg:flex-row gap-4">
+    <form id="form-checkin" class="main_form flex-[2]">
+      <div class="grid gap-4 lg:grid-cols-4 lg:gap-6">
+        <div class="lg:col-span-2">
+          <div class="lg:col-span-2">
+            <label for="room-list">ID Kamar</label>
+            <input
+              type="text"
+              id="room-list"
+              placeholder="Masukan kamar"
+              required=""
+              value="<%= detail.room %>"
+              disabled
+              class="input-disable" />
+          </div>
+        </div>
+        <div class="lg:col-span-2">
+          <label for="room-booker">Pemesan</label>
+          <input
+            type="text"
+            id="room-booker"
+            required=""
+            value="<%= detail.bookedBy %>"
+            disabled
+            class="input-disable" />
+        </div>
+        <div class="lg:col-span-2 relative">
+          <label for="room-guest"
+            >Tamu -
+            <a
+              class="text-blue-500 hover:underline cursor-pointer"
+              onClick="javascript:window.open('/popup/guest','Tambah Tamu Baru','width=600,height=500')"
+              >Tambah Tamu</a
+            ></label
+          >
+          <input
+            autocomplete="off"
+            type="text"
+            id="room-guest"
+            placeholder="Masukan nama tamu terdaftar"
+            required=""
+            value="<%= detail.guest %>" />
+          <div
+            class="absolute top-[4.5rem] rounded-lg bg-white dark:bg-gray-900 dark:text-white z-20 w-full min-h-10 border border-gray-300 hide cursor-pointer"
+            id="guests-list">
+            <ul></ul>
+          </div>
+        </div>
+        <div class="lg:col-span-2">
+          <label for="room-deposit">Deposit</label>
+          <input
+            autocomplete="off"
+            type="text"
+            id="room-deposit"
+            placeholder="Masukan jumlah deposit"
+            required=""
+            value="<%= addSeparator(detail.deposit) %>" />
+        </div>
+        <div class="lg:col-span-4">
+          <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-700" />
+        </div>
+        <div class="lg:col-span-4">
+          <h2 class="my-2 text-xl font-bold text-gray-900 dark:text-white">Ekstra :</h2>
+        </div>
+        <div class="lg:col-span-1">
+          <label for="room-person">Orang (<span class="add-person-init"></span>)</label>
+          <select id="room-person"></select>
+        </div>
+        <div class="lg:col-span-1">
+          <label for="room-bed">Bed (<span class="add-bed-init"></span>)</label>
+          <select id="room-bed"></select>
+        </div>
+        <div class="lg:col-span-1">
+          <label for="room-breakfast">Sarapan (<span class="add-breakfast-init"></span>)</label>
+          <select id="room-breakfast"></select>
+        </div>
+        <div class="lg:col-span-1">
+          <label for="room-decor">Dekorasi</label>
+          <input type="text" id="room-decor" value="0" />
+        </div>
+        <div class="lg:col-span-4">
+          <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-700" />
+        </div>
+        <div
+          class="lg:col-span-4 flex items-center w-full p-4 mb-4 text-sm text-blue-800 rounded-lg bg-blue-50 dark:bg-gray-800 dark:text-blue-400"
+          role="alert">
+          <svg
+            class="flex-shrink-0 inline w-4 h-4 me-3"
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="currentColor"
+            viewBox="0 0 20 20">
+            <path
+              d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
+          </svg>
+          <span class="sr-only">Info</span>
+          <div>
+            <span class="font-medium">Info!</span> Harga yang tercatat (harga, sudah terbayar, sisa pembayaran) tidak
+            termasuk deposit, hanya harga kamar dan harga ekstra.
+            <strong>Harga kamar menggunakan harga kamar saat check-in (bukan harga baru jika ada perubahan)</strong>
+          </div>
+        </div>
+        <div class="lg:col-span-4 flex items-center flex-col lg:flex-row gap-2">
+          <label for="room-total" class="flex-[1]">Harga</label>
+          <input type="text" id="room-total" required="" class="flex-[4] input-disable" value="0" disabled />
+        </div>
+        <div class="lg:col-span-4 flex items-center flex-col lg:flex-row gap-2">
+          <label for="room-paid" class="flex-[1]">Sudah Terbayar</label>
+          <input type="text" id="room-paid" required="" class="flex-[4] input-disable" value="0" disabled />
+        </div>
+        <div class="lg:col-span-4 flex items-center flex-col lg:flex-row gap-2">
+          <label for="room-discount" class="flex-[1]">Potongan Harga</label>
+          <input
+            type="text"
+            id="room-discount"
+            required=""
+            class="flex-[4] input-disable"
+            value="<%= addSeparator(detail.discount) %>"
+            disabled />
+        </div>
+        <div class="lg:col-span-4 flex items-center flex-col lg:flex-row gap-2">
+          <label for="room-pay" class="flex-[1]">Sisa Pembayaran</label>
+          <input
+            type="text"
+            id="room-pay"
+            required=""
+            class="flex-[4] !bg-gray-50 !border-blue-600 !text-blue-600 dark:!text-white dark:!bg-gray-700"
+            value="0"
+            disabled />
+        </div>
+      </div>
+
+      <button type="submit">Check-In</button>
+      <button type="button" class="cyan" onClick="setDepositFull()">100% Deposit</button>
+      <% if (role === 'sudo' || role === 'manager') { %>
+      <button type="button" class="red" onClick="deleteBooking()">Batalkan Booking</button>
+
+      <% } %>
+    </form>
+    <div class="flex-1">
+      <div
+        id="form-info-acc"
+        class="bg-gray-50 text-gray-500 p-4 border border-gray-300 rounded-lg dark:bg-gray-800 dark:border-gray-500 dark:text-gray-200 sticky self-start top-24 w-full">
+        <h2 class="mb-3">Keterangan pemesanan :</h2>
+        <table class="w-full text-sm">
+          <tr class="border-b border-gray-300 h-2">
+            <td class="py-2 w-40">Nomor Kamar</td>
+            <td class="py-2 px-4">:</td>
+            <td class="py-2"><span class="room-number"></span></td>
+          </tr>
+          <tr class="border-b border-gray-300 h-2">
+            <td class="py-2 w-40">Jumlah Malam</td>
+            <td class="py-2 px-4">:</td>
+            <td class="py-2"><span class="room-night"></span></td>
+          </tr>
+          <tr class="border-b border-gray-300 h-2">
+            <td class="py-2 w-40">Kategori Kamar</td>
+            <td class="py-2 px-4">:</td>
+            <td class="py-2"><span class="room-type"></span></td>
+          </tr>
+          <tr class="border-b border-gray-300 h-2">
+            <td class="py-2 w-40">Tipe Kamar</td>
+            <td class="py-2 px-4">:</td>
+            <td class="py-2"><span class="room-smoking"></span></td>
+          </tr>
+          <tr class="border-b border-gray-300 h-2">
+            <td class="py-2">Tipe Bed</td>
+            <td class="py-2 px-4">:</td>
+            <td class="py-2"><span class="room-bed"></span></td>
+          </tr>
+          <tr class="border-b border-gray-300 h-2">
+            <td class="py-2">Asal Pemesanan</td>
+            <td class="py-2 px-4">:</td>
+            <td class="py-2"><span class="room-booking-source"><%= detail.source %></span></td>
+          </tr>
+          <tr class="h-2">
+            <td class="py-2 align-top">Keterangan</td>
+            <td class="py-2 px-4 align-top">:</td>
+            <td class="py-2">
+              <span class="room-detail"></span>
+            </td>
+          </tr>
+        </table>
+        <p class="text-right text-xs mt-4 text-gray-500">Dibuat pada : <%= detail.createdAt %></p>
+        <p class="text-right text-xs mt-4 text-gray-500">Diterima : <%= detail.receivedBy %></p>
+      </div>
+    </div>
+  </div>
+</section>
+<script>
+  // NIGHT INFO STUFF
+  const calculateNights = () => {
+    const startDate = new Date('<%= detail.startDate %>')
+    const endDate = new Date('<%= detail.endDate %>')
+    // Calculate the time difference in milliseconds, convert to days, and display the result
+    const nightDifference = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24))
+
+    return nightDifference
+  }
+
+  // CONSTANT VALUE
+  const bookingId = '<%= params %>'
+  const nightCount = calculateNights()
+
+  // INIT VALUE WHEN INC/DEC EXTRA
+  const initAddPerson = Number('<%= person %>')
+  const initAddBed = Number('<%= bed %>')
+  const initAddBreakfast = Number('<%= breakfast %>')
+
+  // INITIAL EXTRA PRICE VALUE ACC TO DB/BOOKING STATE QTY
+  let initPersonQty = Number('<%= detail.extraPerson %>')
+  let initBedQty = Number('<%= detail.extraBed %>')
+  let initBreakfastQty = Number('<%= detail.extraBreakfast %>')
+  let initDecor = Number('<%= detail.extraDecor %>')
+
+  // EXTRA VALUE
+  let extraPerson = initAddPerson * initPersonQty
+  let extraBed = initAddBed * initBedQty
+  let extraBreakfast = initAddBreakfast * initBreakfastQty
+  let extraDecor = initDecor
+
+  // TOTAL AND AMOUNT OF PAY
+  let totalRoom = Number('<%= detail.totalRoom %>')
+  let totalExtra = extraPerson + extraBed + extraDecor + extraBreakfast
+  let paid = Number('<%= detail.paid %>')
+  const totalDiscount = '<%= detail.discount %>'
+  let totalPrice = totalExtra + totalRoom
+  let pay = totalPrice - paid - totalDiscount
+
+  // TEMPORARY VALUE
+  let decorTemp = initDecor
+  let personTemp = 0
+
+  const triggerUpdateEvent = () => {
+    document.dispatchEvent(new Event('update-info'))
+  }
+
+  const roomPaidEl = document.querySelector('#room-paid')
+  const roomPayEl = document.querySelector('#room-pay')
+  const roomTotalEl = document.querySelector('#room-total')
+  const roomDepositEl = document.querySelector('#room-deposit')
+  const roomListEl = document.querySelector('#room-list')
+  const roomBedEl = document.querySelector('#room-bed')
+  const roomPersonEl = document.querySelector('#room-person')
+  const roomBreakfastEl = document.querySelector('#room-breakfast')
+  const roomDecorEl = document.querySelector('#room-decor')
+
+  // OPTION STUFF
+  roomPersonEl.innerHTML = `
+    <option value="0" ${initPersonQty === 0 ? 'selected' : ''}>0</option>
+    <option value="1" ${initPersonQty === 1 ? 'selected' : ''}>1</option>
+    <option value="2" ${initPersonQty === 2 ? 'selected' : ''}>2</option>
+    <option value="3" ${initPersonQty === 3 ? 'selected' : ''}>3</option>
+    <option value="4" ${initPersonQty === 4 ? 'selected' : ''}>4</option>
+    <option value="5" ${initPersonQty === 5 ? 'selected' : ''}>5</option>
+  `
+  roomPersonEl.addEventListener('change', (e) => {
+    const price = initAddPerson * Number(e.target.value)
+    extraPerson = price
+    initPersonQty = Number(e.target.value)
+    triggerUpdateEvent()
+  })
+
+  roomBedEl.addEventListener('change', (e) => {
+    const price = initAddBed * Number(e.target.value)
+    extraBed = price
+    initBedQty = Number(e.target.value)
+
+    triggerUpdateEvent()
+  })
+
+  roomBreakfastEl.addEventListener('change', (e) => {
+    const price = initAddBreakfast * Number(e.target.value)
+    extraBreakfast = price
+    initBreakfastQty = Number(e.target.value)
+
+    triggerUpdateEvent()
+  })
+
+  roomDecorEl.addEventListener('change', (e) => {
+    if (e.target.value === '') {
+      e.target.value = 0
+    }
+    extraDecor = Number(removeCurrency(e.target.value))
+    triggerUpdateEvent()
+  })
+
+  roomDepositEl.addEventListener('change', (e) => {
+    if (e.target.value === '') {
+      e.target.value = 0
+    }
+  })
+
+  roomBedEl.innerHTML = `
+    <option value="0" ${initBedQty === 0 ? 'selected' : ''}>0</option>
+    <option value="1" ${initBedQty === 1 ? 'selected' : ''}>1</option>
+    <option value="2" ${initBedQty === 2 ? 'selected' : ''}>2</option>
+    <option value="3" ${initBedQty === 3 ? 'selected' : ''}>3</option>
+    <option value="4" ${initBedQty === 4 ? 'selected' : ''}>4</option>
+    <option value="5" ${initBedQty === 5 ? 'selected' : ''}>5</option>
+  `
+  roomBreakfastEl.innerHTML = `
+    <option value="0" ${initBreakfastQty === 0 ? 'selected' : ''}>Tidak</option>
+    <option value="1" ${initBreakfastQty === 1 ? 'selected' : ''}>Ya</option>
+  `
+
+  const addCurrency = (number, currency) => {
+    const processed = number
+      .split('.')
+      .join('')
+      .toString()
+      .replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+    if (currency) {
+      return `${currency}. ${processed}`
+    }
+    return processed
+  }
+  const addSeparator = (number) => {
+    const numString = number.toString()
+    const parts = numString.split('.')
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+    const formattedNumber = parts.join('.')
+
+    return formattedNumber
+  }
+  const removeCurrency = (number) => {
+    return parseFloat(number.toString().replace(/\./g, ''))
+  }
+  const sanitizeNonNumber = (value) => {
+    return value.replace(/[^0-9.]/g, '')
+  }
+
+  roomDecorEl.addEventListener('input', (e) => {
+    e.target.value = sanitizeNonNumber(e.target.value, 'Rp')
+    e.target.value = addCurrency(e.target.value)
+  })
+
+  roomDepositEl.addEventListener('input', (e) => {
+    e.target.value = sanitizeNonNumber(e.target.value, 'Rp')
+    e.target.value = addCurrency(e.target.value)
+  })
+
+  document.addEventListener('DOMContentLoaded', async () => {
+    // SET BOOKING DOM STATE
+    roomTotalEl.value = addSeparator(totalPrice)
+    roomPaidEl.value = addSeparator(paid)
+    roomPayEl.value = addSeparator(pay)
+    roomDecorEl.value = addSeparator(initDecor)
+    decorTemp = initDecor
+
+    const addPersonInitEl = document.querySelector('.add-person-init')
+    const addBedInitEl = document.querySelector('.add-bed-init')
+    const addBreakfastInitEl = document.querySelector('.add-breakfast-init')
+
+    addPersonInitEl.innerHTML = addSeparator(initAddPerson)
+    addBedInitEl.innerHTML = addSeparator(initAddBed)
+    addBreakfastInitEl.innerHTML = addSeparator(initAddBreakfast)
+
+    // SET ROOM INFO
+    const response = (await axios.get(`/api/bookings/detail/${bookingId}`)).data.data
+
+    const roomNumberEl = document.querySelector('.room-number')
+    const roomTypeEl = document.querySelector('.room-type')
+    const roomSmokingEl = document.querySelector('.room-smoking')
+    const roomBedEl = document.querySelector('.room-bed')
+    const roomDetailEl = document.querySelector('.room-detail')
+    const roomNightEl = document.querySelector('.room-night')
+    const { category: categoryId, smoking, bed } = (await axios.get(`/api/rooms/${response.room}`)).data.data
+
+    const { category, detail } = (await axios.get(`/api/rooms/category/${categoryId}`)).data.data
+
+    roomNumberEl.innerHTML = '<%= detail.roomNumber %>'
+    roomTypeEl.innerHTML = category
+    roomSmokingEl.innerHTML = smoking ? 'Smoking' : 'Non-Smoking'
+    roomBedEl.innerHTML = bed
+    roomDetailEl.innerHTML = detail
+    roomNightEl.innerHTML = nightCount
+  })
+
+  document.addEventListener('update-info', () => {
+    // EXTRA PRICE
+    totalExtra = extraPerson + extraBed + extraDecor + extraBreakfast
+    totalPrice = totalExtra + totalRoom
+    pay = totalPrice - paid - totalDiscount
+    roomTotalEl.value = addSeparator(totalPrice)
+    roomPayEl.value = addSeparator(pay)
+  })
+
+  // SET DEPOSIT
+  const setDepositFull = () => {
+    const roomPaid = document.querySelector('#room-deposit')
+    roomPaid.value = addSeparator('<%= deposit %>')
+  }
+
+  // GUEST STUFF
+  const guestInputEl = document.querySelector('#room-guest')
+  const guestListEl = document.querySelector('#guests-list')
+
+  const addHideClass = (el) => {
+    const element = document.querySelector(el)
+    element.classList.add('hide')
+  }
+  const removeHideClass = (el) => {
+    const element = document.querySelector(el)
+    element.classList.remove('hide')
+  }
+
+  const clickToFillGuestElValue = (value) => {
+    const guestInputValue = document.querySelector('#room-guest')
+
+    guestInputValue.value = value
+    addHideClass('#guests-list')
+  }
+
+  const checkIsGuestAvailable = (arr) => {
+    if (!arr.length) {
+      addHideClass('#guests-list')
+    } else {
+      removeHideClass('#guests-list')
+    }
+  }
+
+  const guestsBySearch = async () => {
+    const guestInputValue = document.querySelector('#room-guest').value
+    const guestListEl = document.querySelector('#guests-list ul')
+
+    const response = (await axios.get(`/api/guests?search=${guestInputValue}`)).data.data
+
+    checkIsGuestAvailable(response)
+    guestListEl.innerHTML = ''
+    response.forEach((data) => {
+      guestListEl.innerHTML += `
+      <li onClick="clickToFillGuestElValue('${data.id}')" class="suggestions_list">${data.name}_${data.city}</li>
+        `
+    })
+  }
+
+  guestInputEl.addEventListener('input', () => {
+    guestsBySearch()
+  })
+
+  // CLOSE GUEST LIST OUTSIDE CLICK
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('#guests-list') && !e.target.closest('#room-guest')) {
+      addHideClass('#guests-list')
+    }
+  })
+
+  // SUBMIT STUFF
+  const formSubmit = document.querySelector('#form-checkin')
+
+  formSubmit.addEventListener('submit', async (e) => {
+    e.preventDefault()
+
+    const guest = document.querySelector('#room-guest').value
+    const deposit = Number(removeCurrency(document.querySelector('#room-deposit').value))
+    const id = '<%= params %>'
+
+    const payload = {
+      id,
+      guest,
+      deposit,
+      person: initPersonQty,
+      bed: initBedQty,
+      breakfast: initBreakfastQty,
+      decor: extraDecor,
+      totalExtra,
+      paid: totalPrice,
+      pay,
+      startDate: '<%= detail.startDate %>',
+      endDate: '<%= detail.endDate %>'
+    }
+
+    const { isConfirmed } = await Swal.fire({
+      title: 'Check-In',
+      text: 'Yakin mengubah status tamu menjadi check-in?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Check-In',
+      cancelButtonText: 'Batal'
+    })
+
+    if (isConfirmed) {
+      try {
+        await axios.patch(`/api/bookings/checkin/${bookingId}`, payload)
+        await Swal.fire({
+          title: 'Berhasil!',
+          text: 'Anda berhasil menambahkan check-in baru. Data akan tersedia pada halaman check-out',
+          icon: 'success',
+          confirmButtonText: 'Oke!'
+        })
+        location.replace('/checkin')
+      } catch (error) {
+        const errMessage = error.response.data.message
+        await Swal.fire({
+          title: 'Error!',
+          text: errMessage,
+          icon: 'error',
+          confirmButtonText: 'Tutup'
+        })
+      }
+    }
+  })
+
+  const deleteBooking = async () => {
+    const { isConfirmed } = await Swal.fire({
+      title: 'Yakin membatalkan booking?',
+      text: 'Berhati-hati dalam pembatalan booking, karena tindakan ini tidak dapat dikembalikan, pastikan pembatalan dilakukan dengan tujuan yang tepat.',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Batalkan',
+      cancelButtonText: 'Keluar'
+    })
+
+    if (isConfirmed) {
+      try {
+        await axios.delete(`/api/bookings/${bookingId}`)
+        await Swal.fire({
+          title: 'Berhasil!',
+          text: 'Anda berhasil membatalkan booking',
+          icon: 'success',
+          confirmButtonText: 'Oke!'
+        })
+        location.replace('/checkin')
+      } catch (error) {
+        const errMessage = error.response.data.message
+        await Swal.fire({
+          title: 'Error!',
+          text: errMessage,
+          icon: 'error',
+          confirmButtonText: 'Tutup'
+        })
+      }
+    }
+  }
+</script>

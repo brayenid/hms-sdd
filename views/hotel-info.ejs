@@ -1,0 +1,102 @@
+<section class="dark:bg-gray-900 flex flex-col gap-4">
+  <div class="content_container">
+    <h2 class="mb-4 text-xl font-bold text-gray-900 dark:text-white">Informasi Hotel</h2>
+    <form id="form-hotel" class="main_form">
+      <div class="grid gap-4 sm:grid-cols-2 sm:gap-6">
+        <div class="sm:col-span-1">
+          <label for="hotel-name">Nama Hotel</label>
+          <input type="text" id="hotel-name" placeholder="Masukan nama hotel" required="" value="<%= hotel.name %>" />
+        </div>
+        <div class="sm:col-span-1">
+          <label for="hotel-nickname">Nama Tampil</label>
+          <input
+            type="text"
+            id="hotel-nickname"
+            placeholder="Masukan nama tampil hotel"
+            required=""
+            value="<%= hotel.nickname %>" />
+        </div>
+        <div class="sm:col-span-1">
+          <label for="hotel-address">Alamat</label>
+          <input
+            type="text"
+            id="hotel-address"
+            placeholder="Masukan alamat hotel"
+            required=""
+            value="<%= hotel.address %>" />
+        </div>
+        <div class="sm:col-span-1">
+          <label for="hotel-city">Kota</label>
+          <input type="text" id="hotel-city" placeholder="Masukan kota hotel" required="" value="<%= hotel.city %>" />
+        </div>
+        <div class="sm:col-span-1">
+          <label for="hotel-zip">Kode Pos</label>
+          <input type="text" id="hotel-zip" placeholder="Masukan kode pos" required="" value="<%= hotel.zip %>" />
+        </div>
+        <div class="sm:col-span-1">
+          <label for="hotel-phone">No Telepon</label>
+          <input
+            type="tel"
+            id="hotel-phone"
+            placeholder="Masukan nomor telepon hotel"
+            required=""
+            value="<%= hotel.phone %>" />
+        </div>
+      </div>
+      <button type="submit">Ubah</button>
+    </form>
+  </div>
+</section>
+<script>
+  const hotelInfoForm = document.querySelector('#form-hotel')
+
+  hotelInfoForm.addEventListener('submit', async (e) => {
+    e.preventDefault()
+
+    const name = document.querySelector('#hotel-name').value
+    const nickname = document.querySelector('#hotel-nickname').value
+    const address = document.querySelector('#hotel-address').value
+    const city = document.querySelector('#hotel-city').value
+    const zip = document.querySelector('#hotel-zip').value
+    const phone = document.querySelector('#hotel-phone').value
+
+    const payload = {
+      name,
+      nickname,
+      address,
+      city,
+      zip,
+      phone
+    }
+
+    const { isConfirmed } = await Swal.fire({
+      title: 'Yakin mengubah info hotel?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Ubah'
+    })
+
+    if (isConfirmed) {
+      try {
+        await axios.put('/api/hotel/info', payload)
+        await Swal.fire({
+          title: 'Berhasil!',
+          text: 'Anda berhasil mengubah info hotel',
+          icon: 'success',
+          confirmButtonText: 'Oke!'
+        })
+        location.replace('/hotel-info')
+      } catch (error) {
+        const errMessage = error.response.data.message
+        await Swal.fire({
+          title: 'Error!',
+          text: errMessage,
+          icon: 'error',
+          confirmButtonText: 'Tutup'
+        })
+      }
+    }
+  })
+</script>

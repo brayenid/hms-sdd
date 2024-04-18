@@ -1,0 +1,52 @@
+<div class="flex flex-col gap-4">
+  <div class="w-full">
+    <%- include('partials/cancelled-report-header-print.ejs') %>
+    <h1 class="text-xl font-bold text-center mb-1">Laporan Pembatalan Booking</h1>
+    <p class="text-center mb-4 text-xs"><%= new Date() %></p>
+    <div class="overflow-x-auto">
+      <table class="w-full text-gray-700 dark:text-white text-xs">
+        <thead class="text-left">
+          <tr>
+            <th class="py-2 px-4 border-b dark:border-gray-600">Dipesan Oleh</th>
+            <th class="py-2 px-4 border-b dark:border-gray-600">Tanggal Awal</th>
+            <th class="py-2 px-4 border-b dark:border-gray-600">Tanggal Akhir</th>
+            <th class="py-2 px-4 border-b dark:border-gray-600">Kamar</th>
+            <th class="py-2 px-4 border-b dark:border-gray-600">Sudah Dibayar</th>
+            <th class="py-2 px-4 border-b dark:border-gray-600">Deposit</th>
+            <th class="py-2 px-4 border-b dark:border-gray-600">Tanggal</th>
+            <th class="py-2 px-4 border-b dark:border-gray-600">Admin</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (cancels.length) { %> <% cancels.forEach(cancel => { %>
+          <tr>
+            <td class="py-2 px-4 border-b dark:border-gray-600"><%= cancel.bookedBy %></td>
+            <td class="py-2 px-4 border-b dark:border-gray-600">
+              <%= cancel.startDate.split('-').reverse().join('-') %>
+            </td>
+            <td class="py-2 px-4 border-b dark:border-gray-600">
+              <%= cancel.endDate.split('-').reverse().join('-') %>
+            </td>
+            <td class="py-2 px-4 border-b dark:border-gray-600">Room # <%= cancel.roomNumber %></td>
+            <td class="py-2 px-4 border-b dark:border-gray-600"><%= cancel?.paid ? addSeparator(cancel.paid) : 0 %></td>
+            <td class="py-2 px-4 border-b dark:border-gray-600">
+              <%= cancel?.deposit ? addSeparator(cancel.deposit) : 0 %>
+            </td>
+            <td class="py-2 px-4 border-b dark:border-gray-600">
+              <%= cancel.cancelDate.toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: '2-digit' })
+              %>
+            </td>
+            <td class="py-2 px-4 border-b dark:border-gray-600"><%= addSeparator(cancel.adminName) %></td>
+          </tr>
+          <% }) %> <% } else { %>
+          <tr>
+            <td class="py-2 px-4 border-b text-center dark:border-gray-600" colspan="8">Tidak ada data</td>
+          </tr>
+          <% } %>
+          <td class="py-2 px-4 border-b text-center dark:border-gray-600" colspan="4">Total</td>
+          <td class="py-2 px-4 border-b dark:border-gray-600" colspan="4"><%= addSeparator(total) %></td>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

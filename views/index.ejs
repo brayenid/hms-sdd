@@ -1,0 +1,121 @@
+<section class="dark:bg-gray-900 flex flex-col gap-4">
+  <div class="flex flex-col lg:flex-row gap-4">
+    <div class="content_container bg-indigo-500">
+      <a href="/room">
+        <div class="relative text-white">
+          <p class="text-4xl font-extrabold"><%= numberOfRooms %></p>
+          <p>Total Kamar</p>
+          <div class="absolute right-1 top-1">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 text-indigo-800" viewBox="0 0 256 256">
+              <g fill="currentColor">
+                <path d="M200 40v184h-32V40a8 8 0 0 0-8-8h32a8 8 0 0 1 8 8" opacity=".2" />
+                <path
+                  d="M232 216h-24V40a16 16 0 0 0-16-16H64a16 16 0 0 0-16 16v176H24a8 8 0 0 0 0 16h208a8 8 0 0 0 0-16M192 40v176h-16V40ZM64 40h96v176H64Zm80 92a12 12 0 1 1-12-12a12 12 0 0 1 12 12" />
+              </g>
+            </svg>
+          </div>
+        </div>
+      </a>
+    </div>
+    <div class="content_container bg-teal-500">
+      <a href="/checkout">
+        <div class="relative text-white">
+          <p class="text-4xl font-extrabold"><%= guestSleepIn %></p>
+          <p>Tamu Yang Menginap</p>
+          <div class="absolute right-1 top-1">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 text-teal-800" viewBox="0 0 256 256">
+              <g fill="currentColor">
+                <path
+                  d="M210.69 158.18A88 88 0 1 1 97.82 45.31A96.08 96.08 0 0 0 192 160a96.78 96.78 0 0 0 18.69-1.82"
+                  opacity=".2" />
+                <path
+                  d="M240 96a8 8 0 0 1-8 8h-16v16a8 8 0 0 1-16 0v-16h-16a8 8 0 0 1 0-16h16V72a8 8 0 0 1 16 0v16h16a8 8 0 0 1 8 8m-96-40h8v8a8 8 0 0 0 16 0v-8h8a8 8 0 0 0 0-16h-8v-8a8 8 0 0 0-16 0v8h-8a8 8 0 0 0 0 16m72.77 97a8 8 0 0 1 1.43 8A96 96 0 1 1 95.07 37.8a8 8 0 0 1 10.6 9.06a88.07 88.07 0 0 0 103.47 103.47a8 8 0 0 1 7.63 2.67m-19.39 14.88c-1.79.09-3.59.14-5.38.14A104.11 104.11 0 0 1 88 64c0-1.79 0-3.59.14-5.38a80 80 0 1 0 109.24 109.24Z" />
+              </g>
+            </svg>
+          </div>
+        </div>
+      </a>
+    </div>
+    <div class="content_container bg-pink-500">
+      <a href="/room?clean=false">
+        <div class="relative text-white">
+          <p class="text-4xl font-extrabold"><%= dirtyRooms %></p>
+          <p>Kamar Kotor</p>
+          <div class="absolute right-1 top-1">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 text-pink-800" viewBox="0 0 256 256">
+              <g fill="currentColor">
+                <path
+                  d="m163.48 131.48l9.21 9.21a16 16 0 0 1 0 22.62L152 184l-80-80l20.69-20.69a16 16 0 0 1 22.62 0l9.21 9.21a8 8 0 0 0 11.61-.32L191 31a24 24 0 0 1 34 34l-61.17 54.9a8 8 0 0 0-.35 11.58"
+                  opacity=".2" />
+                <path
+                  d="M230.64 25.36a32 32 0 0 0-45.26 0c-.1.1-.2.2-.29.31l-54.91 61.18l-9.18-9.21a24 24 0 0 0-33.95 0l-76.69 76.7a8 8 0 0 0 0 11.31l80 80a8 8 0 0 0 11.31 0L178.36 169a24 24 0 0 0 0-33.95l-9.21-9.2l61.18-54.91a2.91 2.91 0 0 0 .31-.3a32 32 0 0 0 0-45.28M96 228.69L79.32 212l22.34-22.35a8 8 0 0 0-11.31-11.31L68 200.68L55.32 188l22.34-22.35a8 8 0 0 0-11.31-11.31L44 176.68L27.31 160L72 115.31L140.69 184ZM219.46 59.16l-61 54.75a16 16 0 0 0-.62 23.22l9.2 9.21a8 8 0 0 1 0 11.31l-15 15L83.32 104l15-15a8 8 0 0 1 11.31 0l9.21 9.2a16 16 0 0 0 23.22-.62l54.75-61a16 16 0 0 1 22.62 22.62Z" />
+              </g>
+            </svg>
+          </div>
+        </div>
+      </a>
+    </div>
+    <div class="content_container bg-red-500">
+      <a href="/cancelled?start=<%= todaysDateSimplified %>&end=<%= tommorowsDateSimplified %>">
+        <div class="relative text-white">
+          <p class="text-4xl font-extrabold"><%= cancelledBookings %></p>
+          <p>Booking Batal Hari Ini</p>
+          <div class="absolute right-1 top-1">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 text-red-800" viewBox="0 0 256 256">
+              <g fill="currentColor">
+                <path
+                  d="M224 56v152l-32-16l-32 16l-32-16l-32 16l-32-16l-32 16V56a8 8 0 0 1 8-8h176a8 8 0 0 1 8 8"
+                  opacity=".2" />
+                <path
+                  d="M216 40H40a16 16 0 0 0-16 16v152a8 8 0 0 0 11.58 7.15L64 200.94l28.42 14.21a8 8 0 0 0 7.16 0L128 200.94l28.42 14.21a8 8 0 0 0 7.16 0L192 200.94l28.42 14.21A8 8 0 0 0 232 208V56a16 16 0 0 0-16-16m0 155.06l-20.42-10.22a8 8 0 0 0-7.16 0L160 199.06l-28.42-14.22a8 8 0 0 0-7.16 0L96 199.06l-28.42-14.22a8 8 0 0 0-7.16 0L40 195.06V56h176ZM98.34 138.34L116.69 120l-18.35-18.34a8 8 0 0 1 11.32-11.32L128 108.69l18.34-18.35a8 8 0 0 1 11.32 11.32L139.31 120l18.35 18.34a8 8 0 0 1-11.32 11.32L128 131.31l-18.34 18.35a8 8 0 0 1-11.32-11.32" />
+              </g>
+            </svg>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
+  <div class="flex flex-col lg:flex-row gap-4">
+    <div class="content_container flex-[2.6]">
+      <h2 class="subhead text-lg mb-0">Timeline Chart Jadwal Booking</h2>
+      <p class="text-gray-600 text-sm dark:text-gray-200">Data berikut merupakan 9 data booking terdekat</p>
+      <%- include('partials/timeline-chart-dashboard.ejs') %>
+    </div>
+    <div class="content_container flex-[1]">
+      <h2 class="subhead text-lg">Check-In Akan Datang</h2>
+      <%- include('partials/upcoming-checkin.ejs') %> <% if (upcomingCheckIn.length) { %>
+      <div class="w-full text-right text-sm mt-3 pt-3">
+        <a class="text-blue-700 p-2 hover:bg-gray-100/65 rounded uppercase" href="/checkin">Selengkapnya &#187;</a>
+      </div>
+      <% } else {%>
+      <p class="w-full text-sm text-center text-gray-400 dark:text-gray-200 border border-gray-200 p-2 rounded-md">
+        Tidak ada data check-in
+      </p>
+      <% } %>
+    </div>
+  </div>
+  <div class="flex flex-col lg:flex-row gap-4">
+    <div class="content_container flex-[1.5]">
+      <h2 class="subhead text-lg">Check-Out Akan Datang</h2>
+      <%- include('partials/upcoming-checkout.ejs') %> <% if (upcomingCheckOut.length) { %>
+      <div class="w-full text-right text-sm mt-3 pt-3">
+        <a class="text-red-700 p-2 hover:bg-gray-100/65 rounded uppercase" href="/checkout">Selengkapnya &#187;</a>
+      </div>
+      <% } else {%>
+      <p class="w-full text-sm text-center text-gray-400 dark:text-gray-200 border border-gray-200 p-2 rounded-md">
+        Tidak ada data check-out
+      </p>
+      <% } %>
+    </div>
+    <div class="content_container flex-[1]">
+      <h2 class="subhead text-lg">Sumber Tamu</h2>
+
+      <%- include('partials/booking-source-chart.ejs') %>
+    </div>
+    <div class="content_container flex-[1.5]">
+      <h2 class="subhead text-lg">Frekuensi Transaksi</h2>
+
+      <%- include('partials/transactions-chart-simple.ejs') %>
+    </div>
+  </div>
+</section>

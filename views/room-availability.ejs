@@ -1,0 +1,47 @@
+<section class="dark:bg-gray-900 flex flex-col gap-4">
+  <div class="content_container flex flex-col gap-4">
+    <form class="main_form">
+      <div class="flex flex-col md:flex-row justify-between gap-y-6 items-start">
+        <div>
+          <h2 class="subhead mb-1">Check Ketersediaan Kamar</h2>
+          <p class="text-sm mb-4 dark:text-white">Atur tanggal awal dan akhir untuk mengecek ketersediaan kamar</p>
+        </div>
+        <div class="flex gap-4 justify-end">
+          <div class="text-center">
+            <label for="start">Tanggal Awal</label>
+            <input type="date" id="start" name="start" placeholder="Masukan kategori kamar" required />
+          </div>
+          <div class="text-center">
+            <label for="end">Tanggal Akhir</label>
+            <input type="date" name="end" id="end" required />
+          </div>
+          <button type="submit">Cari</button>
+        </div>
+      </div>
+    </form>
+    <div class="text-sm w-full dark:text-white flex gap-4 items-center justify-center">
+      <div class="flex items-center gap-3">
+        <div class="w-3 h-3 rounded-full bg-emerald-500"></div>
+        <p>Kamar Siap</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <div class="w-3 h-3 rounded-full bg-red-500"></div>
+        <p>Kamar Kotor/Perbaikan</p>
+      </div>
+    </div>
+    <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+      <% rooms.forEach(room => { %>
+      <a href="/room/<%= room.id %>">
+        <div
+          class="<%= !room.cleaned || !room.available ? 'bg-red-500' : 'bg-emerald-500' %> rounded-lg shadow p-4 text-center hover:opacity-85">
+          <p class="text-4xl font-extrabold text-white"># <%= room.number %></p>
+          <p class="uppercase text-white mt-3 text-sm">
+            <%= room.category %> <span class="text-white/40">-</span> <%= room.bed %>
+            <span class="text-white/40">-</span> <%= room.smoking ? 'Smoking' : 'Non-Smoking' %>
+          </p>
+        </div></a
+      >
+      <% }) %>
+    </div>
+  </div>
+</section>

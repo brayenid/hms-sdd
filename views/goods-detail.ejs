@@ -1,0 +1,172 @@
+<section class="dark:bg-gray-900 flex flex-col gap-4">
+  <div class="content_container">
+    <h2 class="subhead">Ubah barang penjualan</h2>
+
+    <form id="form-goods" class="main_form">
+      <div class="grid gap-4 sm:grid-cols-3 sm:gap-6">
+        <div class="sm:col-span-1">
+          <label for="goods">Nama Barang</label>
+          <input autocomplete="off" type="text" name="goods" id="goods" placeholder="Masukan nama barang" required="" />
+        </div>
+        <div class="sm:col-span-1">
+          <label for="price">Harga Barang</label>
+          <input
+            autocomplete="off"
+            type="text"
+            name="price"
+            id="price"
+            placeholder="Masukan harga barang dalam angka"
+            required="" />
+        </div>
+        <div class="sm:col-span-1">
+          <label for="stock">Stok Barang</label>
+          <input
+            autocomplete="off"
+            type="number"
+            name="stock"
+            id="stock"
+            min="0"
+            placeholder="Masukan stok barang dalam angka"
+            required=""
+            disabled
+            class="cursor-not-allowed" />
+        </div>
+      </div>
+      <button type="submit">Ubah</button>
+      <button type="button" class="red" onClick="deleteGood()">Hapus</button>
+      <a
+        href="/goods"
+        class="px-4 py-3 text-sm font-medium text-white bg-rose-700 rounded-lg md:w-auto focus:outline-none hover:bg-rose-800 hover:text-white focus:ring-4 focus:ring-rose-200 dark:focus:ring-rose-900 dark:bg-gray-800 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-700">
+        Kembali
+      </a>
+    </form>
+    <div class="mt-4 text-right text-xs dark:text-gray-300">Terakhir diubah : <%= updatedAt %></div>
+    <div class="text-right text-xs dark:text-gray-300">Diubah oleh : <%= updatedBy %></div>
+  </div>
+</section>
+<script>
+  const goodsId = '<%= goodsId %>'
+
+  const deleteGood = async () => {
+    const { isConfirmed } = await Swal.fire({
+      title: 'Yakin menghapus barang ini?',
+      text: 'Tindakan penghapusan ini tidak dapat dikembalikan',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Hapus'
+    })
+
+    if (isConfirmed) {
+      try {
+        await axios.delete(`/api/goods/${goodsId}`)
+        await Swal.fire({
+          title: 'Berhasil!',
+          text: 'Anda berhasil menghapus barang',
+          icon: 'success',
+          confirmButtonText: 'Oke!'
+        })
+        location.replace('/goods')
+      } catch (error) {
+        const errMessage = error.response.data.message
+        await Swal.fire({
+          title: 'Error!',
+          text: errMessage,
+          icon: 'error',
+          confirmButtonText: 'Tutup'
+        })
+      }
+    }
+  }
+  document.addEventListener('DOMContentLoaded', async () => {
+    // CURRENCY STUFF
+    const addCurrency = (number, currency) => {
+      const processed = number
+        .split('.')
+        .join('')
+        .toString()
+        .replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+      if (currency) {
+        return `${currency}. ${processed}`
+      }
+      return processed
+    }
+    const addSeparator = (number) => {
+      const numString = number.toString()
+      const parts = numString.split('.')
+      parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+      const formattedNumber = parts.join('.')
+
+      return formattedNumber
+    }
+    const removeCurrency = (number) => {
+      return parseFloat(number.toString().replace(/\./g, ''))
+    }
+    const sanitizeNonNumber = (value) => {
+      return value.replace(/[^0-9.]/g, '')
+    }
+    const input = document.querySelector('#price')
+    input.addEventListener('input', (e) => {
+      e.target.value = sanitizeNonNumber(e.target.value, 'Rp')
+      e.target.value = addCurrency(e.target.value)
+    })
+
+    // LOAD GOODS
+    const goodsDetail = (await axios.get(`/api/goods/${goodsId}`)).data.data
+
+    const goodsInputEl = document.querySelector('#goods')
+    const priceInputEl = document.querySelector('#price')
+    const stockInputEl = document.querySelector('#stock')
+
+    goodsInputEl.value = goodsDetail.name
+    priceInputEl.value = addSeparator(goodsDetail.price)
+    stockInputEl.value = goodsDetail.stock
+
+    // FORM STUFF
+    const formgoods = document.querySelector('#form-goods')
+    formgoods.addEventListener('submit', async (e) => {
+      e.preventDefault()
+
+      const goodsName = formgoods.querySelector('#goods').value
+      const goodsPrice = removeCurrency(formgoods.querySelector('#price').value)
+      const goodsStock = formgoods.querySelector('#stock').value
+
+      const payload = {
+        name: goodsName,
+        price: goodsPrice,
+        stock: goodsStock
+      }
+
+      const { isConfirmed } = await Swal.fire({
+        title: 'Yakin mengubah detail barang?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Ubah'
+      })
+
+      if (isConfirmed) {
+        try {
+          await axios.put(`/api/goods/${goodsId}`, payload)
+          await Swal.fire({
+            title: 'Berhasil!',
+            text: 'Anda berhasil memperbaharui barang',
+            icon: 'success',
+            confirmButtonText: 'Oke!'
+          })
+          location.replace('/goods')
+        } catch (error) {
+          const errMessage = error.response.data.message
+          await Swal.fire({
+            title: 'Error!',
+            text: errMessage,
+            icon: 'error',
+            confirmButtonText: 'Tutup'
+          })
+        }
+      }
+    })
+  })
+</script>

@@ -1,0 +1,232 @@
+<section class="dark:bg-gray-900 flex flex-col gap-4">
+  <div class="flex gap-4 flex-col">
+    <div class="content_container">
+      <h2 class="subhead">Kelola Barang Keluar/Masuk</h2>
+      <form id="form-goods" class="main_form">
+        <div class="grid gap-4 lg:grid-cols-4 lg:gap-6">
+          <div class="lg:col-span-2">
+            <label for="goods">Barang</label>
+            <select id="goods">
+              <option>-- Pilih Barang --</option>
+              <% goods.forEach(good => { %>
+              <option value="<%= good.id %>"><%= good.name %></option>
+              <% }) %>
+            </select>
+          </div>
+          <div class="lg:col-span-2">
+            <label for="supplier">Keterangan/Supplier</label>
+            <input
+              autocomplete="off"
+              type="text"
+              name="supplier"
+              id="supplier"
+              placeholder="Masukan keterangan atau nama supplier"
+              required=""
+              value="<%= query.supplier || '' %>" />
+          </div>
+          <div class="lg:col-span-2">
+            <label for="quantity">Kuantitas</label>
+            <input
+              autocomplete="off"
+              autofocus
+              type="number"
+              name="quantity"
+              id="quantity"
+              placeholder="Masukan kuantitas barang"
+              required="" />
+          </div>
+          <div class="lg:col-span-2">
+            <label for="price">Harga Total Pembelian</label>
+            <input
+              autocomplete="off"
+              type="text"
+              name="price"
+              id="price"
+              placeholder="Masukan harga barang dalam angka"
+              required="" />
+          </div>
+        </div>
+        <button type="submit">Tambah</button>
+      </form>
+    </div>
+    <div class="content_container" id="supplied-list">
+      <h2 class="subhead">Riwayat Barang Keluar/Masuk</h2>
+      <div
+        class="lg:col-span-4 flex items-center w-full p-4 mb-4 text-sm text-blue-800 rounded-lg bg-blue-50 dark:bg-gray-800 dark:text-blue-400"
+        role="alert">
+        <svg
+          class="flex-shrink-0 inline w-4 h-4 me-3"
+          aria-hidden="true"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="currentColor"
+          viewBox="0 0 20 20">
+          <path
+            d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
+        </svg>
+        <span class="sr-only">Info</span>
+        <div>
+          Jika terdapat kesalahan peng-inputan data, data masih dapat dihapus dalam waktu 120 menit. Jika terlewat,
+          hanya Super Admin yang dapat melakukan penghapusan.
+          <strong>Penghapusan lebih dari 120 menit tidak akan memengaruhi saldo.</strong>
+        </div>
+      </div>
+      <%- include('partials/supply-table-header.ejs') %>
+      <div class="table_container">
+        <table id="table-goods" class="table_fb">
+          <thead class="table_fb__head">
+            <tr>
+              <th scope="col">Barang</th>
+              <th scope="col">Keterangan/Supplier</th>
+              <th scope="col">Kuantitas</th>
+              <th scope="col">Pengeluaran (Rp)</th>
+              <th scope="col">Tanggal</th>
+              <th scope="col">Aksi</th>
+            </tr>
+          </thead>
+          <tbody class="table_fb__body">
+            <% if (supplies.length) { %> <% supplies.forEach(supply => { %>
+            <tr>
+              <td class="px-6 py-4 text-left"><%= supply.name %></td>
+              <td class="px-6 py-4 text-left"><%= supply.supplier %></td>
+              <td class="px-6 py-4"><%= supply.quantity %></td>
+              <td class="px-6 py-4"><%= addSeparator(supply.price) %></td>
+              <td class="px-6 py-4"><%= moment(supply.settledDate).format('DD/MM/YYYY, HH:mm') %></td>
+              <td class="px-6 py-4">
+                <a class="cursor-pointer" onClick="deleteSupply('<%= supply.id %>')">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-red-400" viewBox="0 0 256 256">
+                    <g fill="currentColor">
+                      <path d="M200 56v152a8 8 0 0 1-8 8H64a8 8 0 0 1-8-8V56Z" opacity=".2" />
+                      <path
+                        d="M216 48h-40v-8a24 24 0 0 0-24-24h-48a24 24 0 0 0-24 24v8H40a8 8 0 0 0 0 16h8v144a16 16 0 0 0 16 16h128a16 16 0 0 0 16-16V64h8a8 8 0 0 0 0-16M96 40a8 8 0 0 1 8-8h48a8 8 0 0 1 8 8v8H96Zm96 168H64V64h128Zm-80-104v64a8 8 0 0 1-16 0v-64a8 8 0 0 1 16 0m48 0v64a8 8 0 0 1-16 0v-64a8 8 0 0 1 16 0" />
+                    </g>
+                  </svg>
+                </a>
+              </td>
+            </tr>
+            <% }) %> <% } else { %>
+            <tr>
+              <td class="px-6 py-4" colspan="6">Tidak ada data</td>
+            </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+<script>
+  // DELETE STUFF
+  const deleteSupply = async (id) => {
+    const { isConfirmed } = await Swal.fire({
+      title: 'Yakin menghapus data barang ini?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Hapus'
+    })
+
+    if (isConfirmed) {
+      try {
+        const { message } = (await axios.delete(`/api/supplies/${id}`)).data
+        await Swal.fire({
+          title: 'Berhasil!',
+          text: message,
+          icon: 'success',
+          confirmButtonText: 'Oke!'
+        })
+        location.replace('/supplies<%= query.supplier ? `?supplier=${query.supplier}` : "" %>')
+      } catch (error) {
+        const errMessage = error.response.data.message
+        await Swal.fire({
+          title: 'Error!',
+          text: errMessage,
+          icon: 'error',
+          confirmButtonText: 'Tutup'
+        })
+      }
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', async () => {
+    // CURRENCY STUFF
+    const addCurrency = (number, currency) => {
+      const processed = number
+        .split('.')
+        .join('')
+        .toString()
+        .replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+      if (currency) {
+        return `${currency}. ${processed}`
+      }
+      return processed
+    }
+    const addSeparator = (number) => {
+      const numString = number.toString()
+      const parts = numString.split('.')
+      parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+      const formattedNumber = parts.join('.')
+
+      return formattedNumber
+    }
+    const removeCurrency = (number) => {
+      return parseFloat(number.toString().replace(/\./g, ''))
+    }
+    const sanitizeNonNumber = (value) => {
+      return value.replace(/[^0-9.]/g, '')
+    }
+    const input = document.querySelector('#price')
+    input.addEventListener('input', (e) => {
+      e.target.value = sanitizeNonNumber(e.target.value, 'Rp')
+      e.target.value = addCurrency(e.target.value)
+    })
+
+    // FORM STUFF
+    const formgoods = document.querySelector('#form-goods')
+    formgoods.addEventListener('submit', async (e) => {
+      e.preventDefault()
+
+      const goods = formgoods.querySelector('#goods').value
+      const quantity = formgoods.querySelector('#quantity').value
+      const price = removeCurrency(formgoods.querySelector('#price').value)
+      const supplier = formgoods.querySelector('#supplier').value
+
+      const payload = {
+        goods,
+        quantity,
+        price,
+        supplier
+      }
+
+      const { isConfirmed } = await Swal.fire({
+        title: 'Yakin menambahkan barang masuk baru?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Tambahkan'
+      })
+
+      if (isConfirmed) {
+        try {
+          const { message } = (await axios.post('/api/supplies', payload)).data
+          await Swal.fire({
+            title: 'Berhasil!',
+            text: message,
+            icon: 'success',
+            confirmButtonText: 'Oke!'
+          })
+          location.replace(`/supplies?supplier=${supplier}`)
+        } catch (error) {
+          const errMessage = error.response.data.message
+          await Swal.fire({
+            title: 'Error!',
+            text: errMessage,
+            icon: 'error',
+            confirmButtonText: 'Tutup'
+          })
+        }
+      }
+    })
+  })
+</script>

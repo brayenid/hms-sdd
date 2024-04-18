@@ -1,0 +1,162 @@
+<div class="flex flex-col gap-4">
+  <div class="content_container !bg-sky-500 dark:!bg-gray-800 text-center text-white">
+    <p>Saldo Logistik</p>
+    <p class="text-4xl font-extrabold mt-2">Rp. <%= addSeparator(balance) %></p>
+  </div>
+  <div class="flex gap-4 flex-col">
+    <div class="content_container">
+      <h2 class="subhead">Tambahkan/Kurangi Saldo</h2>
+      <form id="form-balance" class="main_form">
+        <div class="flex flex-col gap-4">
+          <div>
+            <label for="action">Aksi</label>
+            <select id="action" required>
+              <option value="">-- Pilih Aksi --</option>
+              <option value="add">Tambah</option>
+              <option value="min">Kurangi</option>
+            </select>
+          </div>
+          <div>
+            <label for="amount">Besaran Saldo</label>
+            <input
+              autocomplete="off"
+              type="text"
+              name="amount"
+              id="amount"
+              placeholder="Masukan saldo yang ingin ditambahkan"
+              required="" />
+          </div>
+          <div>
+            <label for="purpose">Keterangan</label>
+            <input
+              autocomplete="off"
+              type="text"
+              name="purpose"
+              id="purpose"
+              placeholder="Masukan keterangan saldo "
+              required="" />
+          </div>
+        </div>
+        <button type="submit">Simpan</button>
+      </form>
+    </div>
+    <div class="content_container">
+      <h2 class="subhead">Riwayat Saldo</h2>
+      <%- include('partials/logistic-log-header.ejs') %>
+      <div class="table_container">
+        <table id="table-goods" class="table_fb">
+          <thead class="table_fb__head">
+            <tr>
+              <th scope="col">Detail</th>
+              <th scope="col">Jumlah</th>
+              <th scope="col">Aksi</th>
+              <th scope="col">Saldo Terakhir</th>
+              <th scope="col">Tanggal</th>
+            </tr>
+          </thead>
+          <tbody class="table_fb__body">
+            <% if (balanceLogs.length) { %> <% balanceLogs.forEach(balance => { %>
+            <tr>
+              <td class="px-6 py-4 text-left"><%= balance.detail %></td>
+              <td class="px-6 py-4"><%= addSeparator(balance.amount) %></td>
+              <td class="px-6 py-4">
+                <% if (balance.action === 'add') { %>
+                <span class="text-emerald-500">Add</span>
+                <% } else {%>
+                <span class="text-red-500">Min</span>
+                <% } %>
+              </td>
+              <td class="px-6 py-4"><%= addSeparator(balance.lastBalance) %></td>
+              <td class="px-6 py-4"><%= moment(balance.createdAt).format('LLL') %></td>
+            </tr>
+            <% }) %> <% } else { %>
+            <tr>
+              <td class="px-6 py-4" colspan="5">Tidak ada data</td>
+            </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', async () => {
+    // CURRENCY STUFF
+    const addCurrency = (number, currency) => {
+      const processed = number
+        .split('.')
+        .join('')
+        .toString()
+        .replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+      if (currency) {
+        return `${currency}. ${processed}`
+      }
+      return processed
+    }
+    const addSeparator = (number) => {
+      const numString = number.toString()
+      const parts = numString.split('.')
+      parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+      const formattedNumber = parts.join('.')
+
+      return formattedNumber
+    }
+    const removeCurrency = (number) => {
+      return parseFloat(number.toString().replace(/\./g, ''))
+    }
+    const sanitizeNonNumber = (value) => {
+      return value.replace(/[^0-9.]/g, '')
+    }
+    const input = document.querySelector('#amount')
+    input.addEventListener('input', (e) => {
+      e.target.value = sanitizeNonNumber(e.target.value, 'Rp')
+      e.target.value = addCurrency(e.target.value)
+    })
+
+    // FORM STUFF
+    const formBalance = document.querySelector('#form-balance')
+    formBalance.addEventListener('submit', async (e) => {
+      e.preventDefault()
+      const action = formBalance.querySelector('#action').value
+      const amount = Number(removeCurrency(formBalance.querySelector('#amount').value))
+      const detail = formBalance.querySelector('#purpose').value
+
+      const payload = {
+        action,
+        amount,
+        detail
+      }
+
+      const { isConfirmed } = await Swal.fire({
+        title: action === 'add' ? 'Yakin menambah saldo?' : 'Yakin mengurangi saldo?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: action === 'add' ? 'Tambahkan' : 'Kurangi'
+      })
+
+      if (isConfirmed) {
+        try {
+          await axios.post('/api/balance-log', payload)
+          await Swal.fire({
+            title: 'Berhasil!',
+            text: action === 'add' ? 'Berhasil menambahkan saldo' : 'Berhasil mengurangi saldo',
+            icon: 'success',
+            confirmButtonText: 'Oke!'
+          })
+          location.reload()
+        } catch (error) {
+          const errMessage = error.response.data.message
+          await Swal.fire({
+            title: 'Error!',
+            text: errMessage,
+            icon: 'error',
+            confirmButtonText: 'Tutup'
+          })
+        }
+      }
+    })
+  })
+</script>

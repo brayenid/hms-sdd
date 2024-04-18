@@ -1,0 +1,28 @@
+<section class="dark:bg-gray-900 flex flex-col gap-4">
+  <div class="content_container">
+    <h2 class="subhead">Daftar Kredit</h2>
+    <%- include('partials/checkin-table-header') %>
+    <div class="table_container">
+      <table id="table-cats" class="table_fb">
+        <thead class="table_fb__head">
+          <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Kreditur</th>
+            <th scope="col">Jatuh Tempo</th>
+            <th scope="col">Aksi</th>
+          </tr>
+        </thead>
+        <tbody class="table_fb__body">
+          <% credits.forEach(credit => { %>
+          <tr>
+            <td><%= credit.id %></td>
+            <td><%= credit.name %></td>
+            <td><%= formatISODate(credit.due) %></td>
+            <td><a class="text-blue-500 hover:underline" href="/credits/detail/<%= credit.due %>">Lihat</a></td>
+          </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>

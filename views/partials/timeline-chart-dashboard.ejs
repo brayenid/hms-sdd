@@ -1,0 +1,174 @@
+<div class="timeline-container">
+  <div id="timeline-chart"></div>
+  <div class="text-xs text-gray-500 flex justify-center gap-4">
+    <div class="flex items-center gap-2">
+      <div class="w-2 h-2 rounded-sm bg-yellow-400"></div>
+      <p>Booking hari ini/terlewat</p>
+    </div>
+    <div class="flex items-center gap-2">
+      <div class="w-2 h-2 rounded-sm bg-indigo-600"></div>
+      <p>Check-in akan datang</p>
+    </div>
+
+    <div class="flex items-center gap-2">
+      <div class="w-2 h-2 rounded-sm bg-pink-600"></div>
+      <p>Sudah check-out</p>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', async () => {
+    const isDatePassed = (inputDate) => {
+      const targetDate = new Date(inputDate)
+      const today = new Date()
+      return today >= targetDate
+    }
+
+    const decideBarColor = (startDate, checkOut) => {
+      if (checkOut) {
+        return '#D61F69' // ALREADY CHECKOUT
+      } else if (isDatePassed(startDate)) {
+        return '#E3A008'
+      } else {
+        return '#5850EC'
+      }
+    }
+
+    const response = (await axios.get('/api/bookings/statistic?limit=9')).data.data
+
+    const data = response.map((res) => {
+      return {
+        x: `${res.number}`,
+        y: [new Date(res.startDate).getTime(), new Date(res.endDate).getTime()],
+        fillColor: decideBarColor(res.startDate, res.checkOut)
+      }
+    })
+
+    data.sort((a, b) => a.x - b.x)
+    const options = {
+      series: [
+        {
+          data
+        }
+      ],
+      chart: {
+        locales: [
+          {
+            name: 'id',
+            options: {
+              months: [
+                'Januari',
+                'Februari',
+                'Maret',
+                'April',
+                'Mei',
+                'Juni',
+                'Juli',
+                'Agustus',
+                'September',
+                'Oktober',
+                'November',
+                'Desember'
+              ],
+              shortMonths: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
+              days: ['Minggu', 'Senin', 'Selasa', 'Rabu', 'kamis', 'Jumat', 'Sabtu'],
+              shortDays: ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'],
+              toolbar: {
+                exportToSVG: 'Unduh SVG',
+                exportToPNG: 'Unduh PNG',
+                exportToCSV: 'Unduh CSV',
+                menu: 'Menu',
+                selection: 'Pilihan',
+                selectionZoom: 'Perbesar Pilihan',
+                zoomIn: 'Perbesar',
+                zoomOut: 'Perkecil',
+                pan: 'Geser',
+                reset: 'Atur Ulang Zoom'
+              }
+            }
+          }
+        ],
+        defaultLocale: 'id',
+        height: '390',
+        type: 'rangeBar',
+        fontFamily: 'Inter, sans-serif',
+        toolbar: {
+          show: true,
+          offsetX: 0,
+          offsetY: 0,
+          tools: {
+            download: false,
+            selection: false,
+            zoom: false,
+            zoomin: true,
+            zoomout: true,
+            pan: true,
+            reset: true
+          }
+        },
+        redrawOnParentResize: true
+      },
+      dataLabels: {
+        enabled: true,
+        formatter: function (val, opts) {
+          const label = opts.w.globals.labels[opts.dataPointIndex]
+          const a = moment(val[0])
+          const b = moment(val[1])
+          const diff = b.diff(a, 'days')
+          return `${diff}`
+        },
+        style: {
+          colors: ['#f3f4f5', '#fff'],
+          fontSize: '10px',
+          fontWeight: 'normal'
+        }
+      },
+      plotOptions: {
+        bar: {
+          horizontal: true,
+          borderRadius: 6,
+          barHeight: '75%'
+        }
+      },
+      fill: {
+        type: 'solid',
+        opacity: 0.8
+      },
+      xaxis: {
+        type: 'datetime',
+        labels: {
+          show: true,
+          style: {
+            fontFamily: 'Inter, sans-serif',
+            cssClass: 'text-xs font-normal fill-gray-500 dark:fill-gray-400'
+          }
+        }
+      },
+      yaxis: {
+        labels: {
+          show: true,
+          style: {
+            fontFamily: 'Inter, sans-serif',
+            cssClass: 'text-xs font-normal fill-gray-500 dark:fill-gray-400'
+          }
+        }
+      },
+      grid: {
+        show: false,
+        padding: {
+          left: 4,
+          right: 2,
+          top: -6
+        },
+        row: {
+          colors: ['rgba(0,0,0,0.2)', 'rgba(255,255,255,0.1)'],
+          opacity: 0.3
+        }
+      }
+    }
+
+    const chart = new ApexCharts(document.querySelector('#timeline-chart'), options)
+    chart.render()
+  })
+</script>

@@ -1,0 +1,1 @@
+pg_restore -U postgres -d hms -v "path/to/backup"

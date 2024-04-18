@@ -1,0 +1,117 @@
+<h2 class="subhead">Total Transaksi</h2>
+<div id="transaction-chart-total"></div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', async () => {
+    const addSeparator = (number) => {
+      const numString = number.toString()
+      const parts = numString.split('.')
+      parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+      const formattedNumber = parts.join('.')
+
+      return formattedNumber
+    }
+
+    const transactionsTotal = (await axios.get('/transaction/statistic/total?limit=31')).data.data
+
+    const transactionsTotalArr = []
+    transactionsTotal.forEach((tran) => {
+      transactionsTotalArr.push(tran.transactionTotal / 1000)
+    })
+
+    const monthLabels = []
+    transactionsTotal.forEach((tran) => {
+      monthLabels.push(tran.month)
+    })
+
+    const options = {
+      series: [
+        {
+          name: 'Total Transaksi (k)',
+          data: transactionsTotalArr
+        }
+      ],
+      chart: {
+        height: 350,
+        type: 'line',
+        dropShadow: {
+          enabled: true,
+          color: '#000',
+          top: 18,
+          left: 7,
+          blur: 10,
+          opacity: 0.2
+        },
+        toolbar: {
+          show: false
+        }
+      },
+      colors: ['#77B6EA', '#545454'],
+      dataLabels: {
+        enabled: true,
+        formatter: function (value) {
+          return Number(value).toLocaleString()
+        }
+      },
+      stroke: {
+        curve: 'smooth'
+      },
+      grid: {
+        borderColor: '#e7e7e7',
+        row: {
+          colors: ['rgba(255, 255, 255, .2)', 'transparent'], // takes an array which will be repeated on columns
+          opacity: 0.5
+        }
+      },
+      markers: {
+        size: 1
+      },
+      xaxis: {
+        categories: [...new Set(monthLabels)].sort(),
+        title: {
+          text: 'Bulan',
+          style: {
+            fontFamily: 'Inter, sans-serif',
+            cssClass: 'text-xs font-normal fill-gray-500 dark:fill-gray-400'
+          }
+        },
+        labels: {
+          style: {
+            fontFamily: 'Inter, sans-serif',
+            cssClass: 'text-xs font-normal fill-gray-500 dark:fill-gray-400'
+          }
+        }
+      },
+      yaxis: {
+        title: {
+          text: 'Total Transaksi (k)',
+          style: {
+            fontFamily: 'Inter, sans-serif',
+            cssClass: 'text-xs font-normal fill-gray-500 dark:fill-gray-400'
+          }
+        },
+        labels: {
+          style: {
+            fontFamily: 'Inter, sans-serif',
+            cssClass: 'text-xs font-normal fill-gray-500 dark:fill-gray-400'
+          },
+          formatter: function (value) {
+            return Number(value).toLocaleString()
+          }
+        },
+        min: 1000,
+        max: 500000
+      },
+      legend: {
+        position: 'top',
+        horizontalAlign: 'right',
+        floating: true,
+        offsetY: -25,
+        offsetX: -5
+      }
+    }
+
+    const chartTotal = new ApexCharts(document.querySelector('#transaction-chart-total'), options)
+    chartTotal.render()
+  })
+</script>

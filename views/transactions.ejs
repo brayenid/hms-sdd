@@ -1,0 +1,61 @@
+<section class="dark:bg-gray-900 flex flex-col gap-4">
+  <div class="content_container">
+    <h2 class="subhead">Daftar Transaksi Kamar</h2>
+    <%- include('partials/transactions-table-header') %>
+    <div class="table_container">
+      <table id="table-cats" class="table_fb">
+        <thead class="table_fb__head">
+          <tr>
+            <th scope="col">Inv</th>
+            <th scope="col">Tamu</th>
+            <th scope="col">Pemesan</th>
+            <th scope="col">Check In</th>
+            <th scope="col">Check Out</th>
+            <th scope="col">Settled</th>
+            <th scope="col">Aksi</th>
+          </tr>
+        </thead>
+        <tbody class="table_fb__body">
+          <tr>
+            <td class="px-6 py-4" colspan="8">Memuat...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+<script>
+  document.addEventListener('DOMContentLoaded', async () => {
+    // LOAD BOOKINGS
+    let bookings = []
+    const response = (
+      await axios.get('/api/transactions?search=<%= query.search %>&start=<%= query.start %>&end=<%= query.end %>')
+    ).data.data
+    bookings = response
+    const tableBody = document.querySelector('#table-cats tbody')
+    if (bookings.length) {
+      tableBody.innerHTML = ''
+      bookings.forEach((data) => {
+        const element = `
+            <tr>
+              <td>${data.id}</td>
+              <td>${data.name}</td>
+              <td>${data.bookedBy}</td>
+              <td>${data.startDate.split('-').reverse().join('-')}</td>
+              <td>${data.endDate.split('-').reverse().join('-')}</td>
+              <td>${moment(data.createdAt).format('DD-MM-YYYY')}</td>
+              <td><a class="text-blue-500 hover:underline" href="/transaction/${data.id}">Detail</a></td>
+            </tr>
+            `
+        tableBody.innerHTML += element
+      })
+    } else {
+      const element = `
+            <tr>
+              <td colspan="8">Tidak ada data !</td>
+            </tr>
+            `
+      tableBody.innerHTML = element
+    }
+  })
+</script>

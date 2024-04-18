@@ -1,0 +1,97 @@
+<section class="dark:bg-gray-900 flex flex-col gap-4">
+  <div class="content_container">
+    <h2 class="mb-4 text-xl font-bold text-gray-900 dark:text-white">Tambahkan Tamu Baru</h2>
+    <form id="form-guest" class="main_form">
+      <div class="flex flex-col gap-3">
+        <div class="sm:col-span-1">
+          <label for="guest-identity-type">Tipe Identitas</label>
+          <select id="guest-identity-type" required>
+            <option value="KTP" selected>KTP</option>
+            <option value="SIM">SIM</option>
+            <option value="Pasport">Pasport</option>
+          </select>
+        </div>
+        <div class="sm:col-span-1">
+          <label for="guest-identity-number">Nomor Identitas</label>
+          <input type="text" id="guest-identity-number" placeholder="Masukan nomor identitas" required="" />
+        </div>
+        <div class="sm:col-span-1">
+          <label for="guest-name">Nama Tamu</label>
+          <input type="text" id="guest-name" placeholder="Masukan nama tamu" required="" />
+        </div>
+        <div class="sm:col-span-1">
+          <label for="guest-gender">Gender</label>
+          <select id="guest-gender" required>
+            <option value="male" selected>Laki-laki</option>
+            <option value="female">Perempuan</option>
+          </select>
+        </div>
+        <div class="sm:col-span-1">
+          <label for="guest-address">Alamat</label>
+          <input type="text" id="guest-address" placeholder="Masukan alamat tamu" required="" />
+        </div>
+        <div class="sm:col-span-1">
+          <label for="guest-city">Kota Asal</label>
+          <input type="text" id="guest-city" placeholder="Masukan kota asal tamu" required="" />
+        </div>
+        <div class="sm:col-span-1">
+          <label for="guest-nationality">Kebangsaan</label>
+          <select id="guest-nationality">
+            <% nationalities.forEach(nationality => { %> <% if (nationality === 'Indonesia') { %>
+            <option value="<%= nationality %>" selected><%= nationality %></option>
+            <% } else { %>
+            <option value="<%= nationality %>"><%= nationality %></option>
+            <% }%> <% }) %>
+          </select>
+        </div>
+      </div>
+      <button type="submit">Tambah</button>
+    </form>
+  </div>
+</section>
+<script>
+  const formGuestEl = document.querySelector('#form-guest')
+  formGuestEl.addEventListener('submit', async (e) => {
+    e.preventDefault()
+
+    const idType = document.querySelector('#guest-identity-type').value
+    const idNumber = document.querySelector('#guest-identity-number').value
+    const name = document.querySelector('#guest-name').value
+    const gender = document.querySelector('#guest-gender').value
+    const address = document.querySelector('#guest-address').value
+    const city = document.querySelector('#guest-city').value
+    const nationality = document.querySelector('#guest-nationality').value
+
+    const payload = { idType, idNumber, name, gender, address, city, nationality }
+
+    const { isConfirmed } = await Swal.fire({
+      title: 'Yakin menambahkan tamu baru?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Tambahkan'
+    })
+
+    if (isConfirmed) {
+      try {
+        await axios.post('/api/guests', payload)
+        await Swal.fire({
+          title: 'Berhasil!',
+          text: 'Anda berhasil menambahkan tamu baru',
+          icon: 'success',
+          confirmButtonText: 'Oke!'
+        })
+        window.close()
+      } catch (error) {
+        const errMessage = error.response.data.message
+        await Swal.fire({
+          title: 'Error!',
+          text: errMessage,
+          icon: 'error',
+          confirmButtonText: 'Tutup'
+        })
+      }
+    }
+  })
+</script>

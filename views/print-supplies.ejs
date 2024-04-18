@@ -1,0 +1,147 @@
+<style>
+  /* Media query untuk tampilan cetak */
+  @media print {
+    .no-print {
+      display: none;
+    }
+    @page {
+      margin-top: 0;
+      margin-bottom: 0;
+    }
+    .print-control {
+      display: none;
+    }
+    .print-area {
+      display: none;
+    }
+  }
+</style>
+<div class="max-w-5xl mx-auto">
+  <div class="mt-6 mb-4 flex justify-end gap-x-3 no-print">
+    <form class="flex !w-full gap-3">
+      <div class="relative flex-[2]">
+        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+          <svg
+            aria-hidden="true"
+            class="w-5 h-5 text-gray-500 dark:text-gray-400"
+            fill="currentColor"
+            viewbox="0 0 20 20"
+            xmlns="http://www.w3.org/2000/svg">
+            <path
+              fill-rule="evenodd"
+              d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+              clip-rule="evenodd" />
+          </svg>
+        </div>
+        <input
+          type="text"
+          id="simple-search"
+          name="search"
+          class="block w-full p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+          placeholder="Search"
+          value="<%= query.search %>" />
+      </div>
+      <div class="relative flex items-center gap-3 flex-[1.3]">
+        <label for="limit" class="custom_label">Limit</label>
+        <input
+          type="number"
+          id="limit"
+          name="limit"
+          class="block w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+          placeholder="Limit data tampil"
+          value="<%= query.limit || 50 %>" />
+      </div>
+      <div class="relative flex items-center gap-3 flex-[1.3]">
+        <label for="start-date" class="custom_label">In</label>
+        <input
+          type="date"
+          id="start-date"
+          name="start"
+          class="block w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+          placeholder="Tanggal check-in"
+          value="<%= query.start %>" />
+      </div>
+      <div class="relative flex items-center gap-3 flex-[1.3]">
+        <label for="end-date" class="custom_label">Out</label>
+        <input
+          type="date"
+          id="end-date"
+          name="end"
+          class="block w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+          placeholder="Tanggal check-out"
+          value="<%= query.end %>" />
+      </div>
+      <div class="relative flex items-center gap-3 flex-[1.3]">
+        <button
+          type="submit"
+          class="w-full px-4 py-2 text-sm font-medium text-white bg-blue-700 border border-gray-200 rounded-lg md:w-auto focus:outline-none hover:bg-blue-800 hover:text-white focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-900 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
+          Cari
+        </button>
+      </div>
+    </form>
+    <a
+      class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600 cursor-pointer"
+      onClick="window.print()">
+      <svg
+        class="flex-shrink-0 w-4 h-4"
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round">
+        <polyline points="6 9 6 2 18 2 18 9" />
+        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+        <rect width="12" height="8" x="6" y="14" />
+      </svg>
+    </a>
+    <a
+      href="/supplies"
+      class="flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-white bg-orange-700 border border-gray-200 rounded-lg md:w-auto focus:outline-none hover:bg-orange-800 hover:text-white focus:ring-4 focus:ring-orange-200 dark:focus:ring-orange-900 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
+      Kembali
+    </a>
+  </div>
+  <h2 class="subhead text-center !mb-1">Riwayat Barang Keluar/Masuk</h2>
+  <p class="text-center text-xs"><%= new Date() %></p>
+  <table class="min-w-full text-gray-700 dark:text-white text-xs mt-5">
+    <thead>
+      <tr>
+        <th scope="col" class="py-2 px-4 border-b dark:border-gray-600">Barang</th>
+        <th scope="col" class="py-2 px-4 border-b dark:border-gray-600">Keterangan/Supplier</th>
+        <th scope="col" class="py-2 px-4 border-b dark:border-gray-600">Kuantitas</th>
+        <th scope="col" class="py-2 px-4 border-b dark:border-gray-600">Pengeluaran (Rp)</th>
+        <th scope="col" class="py-2 px-4 border-b dark:border-gray-600">Saldo Terakhir</th>
+        <th scope="col" class="py-2 px-4 border-b dark:border-gray-600">Tanggal</th>
+        <th scope="col" class="py-2 px-4 border-b dark:border-gray-600">Admin</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if (supplies.length) { %> <% supplies.forEach(supply => { %>
+      <tr>
+        <td class="py-2 px-4 border-b dark:border-gray-600"><%= supply.name %></td>
+        <td class="py-2 px-4 border-b dark:border-gray-600"><%= supply.supplier %></td>
+        <td class="py-2 px-4 border-b dark:border-gray-600"><%= supply.quantity %></td>
+        <td class="py-2 px-4 border-b dark:border-gray-600"><%= addSeparator(supply.price) %></td>
+        <td class="py-2 px-4 border-b dark:border-gray-600"><%= addSeparator(supply.lastBalance) %></td>
+        <td class="py-2 px-4 border-b dark:border-gray-600">
+          <%= moment(supply.settledDate).format('DD/MM/YYYY, HH:mm') %>
+        </td>
+        <td class="py-2 px-4 border-b dark:border-gray-600"><%= supply.admin %></td>
+      </tr>
+      <% }) %> <% } else { %>
+      <tr class="text-center">
+        <td class="py-2 px-4 border-b dark:border-gray-600" colspan="7">Tidak ada data</td>
+      </tr>
+      <% } %>
+      <tr>
+        <td class="py-2 px-4 border-b dark:border-gray-600 text-center" colspan="3">Total</td>
+        <td class="py-2 px-4 border-b dark:border-gray-600"><%= addSeparator(suppliesTotal) %></td>
+        <td class="py-2 px-4 border-b dark:border-gray-600" colspan="3"></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<script></script>

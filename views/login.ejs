@@ -1,0 +1,130 @@
+<section class="bg-gray-50 dark:bg-gray-900">
+  <div class="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
+    <div class="max-w-36 mb-4">
+      <img src="/logo.png" alt="" />
+    </div>
+    <p class="flex items-center mb-6 text-2xl font-semibold text-gray-900 dark:text-white"><%= hotel.name %> HMS</p>
+    <div
+      class="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
+      <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
+        <div class="text-center pb-4">
+          <h1 class="mb-2 font-semibold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
+            Selamat datang kembali!
+          </h1>
+          <p class="text-sm text-gray-600">Silahkan masukan informasi anda untuk masuk.</p>
+        </div>
+        <form class="space-y-4 md:space-y-6" id="auth-form">
+          <div>
+            <label for="username" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Username</label>
+            <input
+              autocomplete="off"
+              type="text"
+              name="username"
+              id="username"
+              class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              placeholder="Masukan username anda"
+              required="" />
+          </div>
+          <div>
+            <label for="password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
+            <input
+              type="password"
+              name="password"
+              id="password"
+              placeholder="••••••••"
+              class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              required="" />
+          </div>
+          <button type="submit" class="btn_primary">Masuk</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+<script>
+  let clickCount = 0
+
+  const checkClick = async () => {
+    if (clickCount === 5) {
+      const { value } = await Swal.fire({
+        title: 'Reset sudo',
+        inputLabel: "Ketik 'reset' untuk memvalidasi permintaan",
+        input: 'text',
+        inputValidator: (value) => {
+          if (value !== 'reset') {
+            return 'Permintaan tidak valid.'
+          }
+        },
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Reset'
+      })
+      if (value) {
+        try {
+          await axios.get('/api/sudo/reset', { cleaniness: 'clean' })
+          await Swal.fire({
+            title: 'Berhasil!',
+            text: 'Akun sudo berhasil di-reset',
+            icon: 'success',
+            confirmButtonText: 'Oke!'
+          })
+        } catch (error) {
+          const errMessage = error.response.data.message
+          await Swal.fire({
+            title: 'Error!',
+            text: errMessage,
+            icon: 'error',
+            confirmButtonText: 'Tutup'
+          })
+        }
+      }
+      clickCount = 0 // Reset click count after detection
+    }
+  }
+
+  document.addEventListener('keydown', async (e) => {
+    if (e.key === '0' && e.ctrlKey) {
+      clickCount++
+    }
+    await checkClick()
+  })
+
+  document.addEventListener('DOMContentLoaded', async () => {
+    const authForm = document.querySelector('#auth-form')
+    const username = authForm.querySelector('#username')
+    const password = authForm.querySelector('#password')
+    const postAuth = async () => {
+      await axios.post('/api/auth', {
+        username: username.value,
+        password: password.value
+      })
+    }
+
+    authForm.addEventListener('submit', async (e) => {
+      e.preventDefault()
+      try {
+        await postAuth()
+        await Swal.fire({
+          title: 'Berhasil!',
+          text: 'Anda berhasil masuk',
+          icon: 'success',
+          confirmButtonText: 'Oke!',
+          timer: 2000,
+          timerProgressBar: true
+        })
+        window.location.replace('/')
+      } catch (error) {
+        const errMessage = error.response.data.message
+
+        await Swal.fire({
+          title: 'Error!',
+          text: errMessage,
+          icon: 'error',
+          confirmButtonText: 'Tutup'
+        })
+      }
+    })
+  })
+</script>

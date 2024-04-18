@@ -1,0 +1,57 @@
+<section class="dark:bg-gray-900 flex flex-col gap-4">
+  <div class="content_container">
+    <h2 class="subhead">Daftar Check-Out Yang Akan Datang</h2>
+    <%- include('partials/checkout-table-header') %>
+    <div class="table_container">
+      <table id="table-cats" class="table_fb">
+        <thead class="table_fb__head">
+          <tr>
+            <th scope="col">Tamu</th>
+            <th scope="col">Kamar</th>
+            <th scope="col">Check In</th>
+            <th scope="col">Check Out</th>
+            <th scope="col">Aksi</th>
+          </tr>
+        </thead>
+        <tbody class="table_fb__body">
+          <tr>
+            <td class="px-6 py-4" colspan="6">Memuat...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+<script>
+  document.addEventListener('DOMContentLoaded', async () => {
+    // LOAD BOOKINGS
+    let bookings = []
+    const response = await axios.get(
+      '/api/bookings/checkout?search=<%= query.search %>&start=<%= query.start %>&end=<%= query.end %>'
+    )
+    bookings = response.data.data
+    const tableBody = document.querySelector('#table-cats tbody')
+    if (bookings.length) {
+      tableBody.innerHTML = ''
+      bookings.forEach((data) => {
+        const element = `
+          <tr>
+            <td>${data.name}</td>
+            <td>${data.room}</td>
+            <td>${data.startDate.split('-').reverse().join('-')}</td>
+            <td>${data.endDate.split('-').reverse().join('-')}</td>
+            <td><a class="text-blue-500 hover:underline" href="/checkout/${data.id}">Check-Out</a></td>
+          </tr>
+          `
+        tableBody.innerHTML += element
+      })
+    } else {
+      const element = `
+          <tr>
+            <td colspan="6">Tidak ada data !</td>
+          </tr>
+          `
+      tableBody.innerHTML = element
+    }
+  })
+</script>

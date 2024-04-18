@@ -1,0 +1,574 @@
+{
+    "client": "Thunder Client",
+    "collectionName": "HMS",
+    "dateExported": "2024-01-15T03:54:16.519Z",
+    "version": "1.1",
+    "folders": [
+        {
+            "_id": "5767c54d-2284-4325-aeb6-90175fa8cff3",
+            "name": "SUDO",
+            "containerId": "",
+            "created": "2023-12-19T03:33:26.684Z",
+            "sortNum": 10000
+        },
+        {
+            "_id": "554ace97-6abf-4c87-9dc1-bfe6e865b3e3",
+            "name": "AUTH",
+            "containerId": "",
+            "created": "2023-12-19T03:33:26.686Z",
+            "sortNum": 20000
+        },
+        {
+            "_id": "09321e2a-b751-4bb2-bc52-be17afd4c9a7",
+            "name": "ADMIN",
+            "containerId": "",
+            "created": "2023-12-19T03:33:26.687Z",
+            "sortNum": 30000
+        },
+        {
+            "_id": "d4b5eadb-140b-45fe-8c0a-d6cc44ef4b88",
+            "name": "ROOM_CAT",
+            "containerId": "",
+            "created": "2023-12-19T03:33:26.688Z",
+            "sortNum": 40000
+        },
+        {
+            "_id": "358b5f66-659c-488d-b91c-6a90158086b8",
+            "name": "ROOMS",
+            "containerId": "",
+            "created": "2023-12-19T03:33:26.689Z",
+            "sortNum": 50000
+        },
+        {
+            "_id": "93befd49-799f-4865-82bc-dac464fb5ac6",
+            "name": "GUESTS",
+            "containerId": "",
+            "created": "2023-12-19T03:33:26.690Z",
+            "sortNum": 60000
+        },
+        {
+            "_id": "0c12241a-4e9b-470a-939d-c57cab696bc1",
+            "name": "BOOKING",
+            "containerId": "",
+            "created": "2023-12-19T03:33:26.691Z",
+            "sortNum": 70000
+        },
+        {
+            "_id": "a67446f1-2c9a-46ef-9649-ca1daeb14ddf",
+            "name": "EXTRA_PRICE",
+            "containerId": "",
+            "created": "2024-01-06T22:42:32.812Z",
+            "sortNum": 80000
+        }
+    ],
+    "requests": [
+        {
+            "_id": "45232ece-c893-48c3-853f-7c860cef55d1",
+            "colId": "8d96fd84-2f1b-4a2a-ad4d-6fdd104409c7",
+            "containerId": "5767c54d-2284-4325-aeb6-90175fa8cff3",
+            "name": "SUDO_CREATE",
+            "url": "http://localhost:3000/sudo/create",
+            "method": "GET",
+            "sortNum": 10000,
+            "created": "2023-12-19T03:33:26.685Z",
+            "modified": "2023-12-19T03:33:26.685Z",
+            "headers": [],
+            "params": [],
+            "tests": [
+                {
+                    "type": "res-code",
+                    "custom": "",
+                    "action": "equal",
+                    "value": "201"
+                }
+            ]
+        },
+        {
+            "_id": "bfb50b7d-4d95-4ace-b6d2-f67f079463ff",
+            "colId": "8d96fd84-2f1b-4a2a-ad4d-6fdd104409c7",
+            "containerId": "554ace97-6abf-4c87-9dc1-bfe6e865b3e3",
+            "name": "LOGIN",
+            "url": "http://localhost:3000/api/auth",
+            "method": "POST",
+            "sortNum": 20000,
+            "created": "2023-12-19T03:33:26.686Z",
+            "modified": "2023-12-30T02:17:55.529Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"username\" : \"sudo\",\n  \"password\" : \"sudo99\"\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "7e77295a-537a-4659-ba15-2673b2c9dc64",
+            "colId": "8d96fd84-2f1b-4a2a-ad4d-6fdd104409c7",
+            "containerId": "554ace97-6abf-4c87-9dc1-bfe6e865b3e3",
+            "name": "LOGOUT",
+            "url": "http://localhost:3000/api/auth",
+            "method": "DELETE",
+            "sortNum": 30000,
+            "created": "2023-12-19T03:33:26.687Z",
+            "modified": "2023-12-30T02:18:01.942Z",
+            "headers": [],
+            "params": [],
+            "tests": []
+        },
+        {
+            "_id": "b4fac7ce-0a50-4fff-803a-40b08bdaf23b",
+            "colId": "8d96fd84-2f1b-4a2a-ad4d-6fdd104409c7",
+            "containerId": "5767c54d-2284-4325-aeb6-90175fa8cff3",
+            "name": "SUDO_CREDENTIAL_PATCH",
+            "url": "http://localhost:3000/sudo/credential",
+            "method": "PATCH",
+            "sortNum": 40000,
+            "created": "2023-12-19T03:33:26.688Z",
+            "modified": "2023-12-19T03:33:26.688Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"oldPassword\" : \"sudo99\",\n  \"newPassword\" : \"sudo1234\"\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "e6eb9e5a-5929-4e98-9644-50d3eda4a321",
+            "colId": "8d96fd84-2f1b-4a2a-ad4d-6fdd104409c7",
+            "containerId": "5767c54d-2284-4325-aeb6-90175fa8cff3",
+            "name": "SUDO_ADD_ADMIN",
+            "url": "http://localhost:3000/api/sudo/admin",
+            "method": "POST",
+            "sortNum": 50000,
+            "created": "2023-12-19T03:33:26.689Z",
+            "modified": "2024-01-08T02:14:56.943Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"name\" : \"Brayen Luhat\",\n  \"username\" : \"brayenid\",\n  \"password\" : \"12345678\",\n  \"role\" : \"frontdesk\"\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "8e879a00-0c37-4732-9bc4-e2e27b591079",
+            "colId": "8d96fd84-2f1b-4a2a-ad4d-6fdd104409c7",
+            "containerId": "5767c54d-2284-4325-aeb6-90175fa8cff3",
+            "name": "SUDO_REMOVE_ADMIN",
+            "url": "http://localhost:3000/sudo/admin/CLEANING-597088810038",
+            "method": "DELETE",
+            "sortNum": 60000,
+            "created": "2023-12-19T03:33:26.690Z",
+            "modified": "2023-12-19T03:33:26.690Z",
+            "headers": [],
+            "params": [],
+            "tests": []
+        },
+        {
+            "_id": "e7ce9bde-5c92-40c3-ae21-db5560b8d012",
+            "colId": "8d96fd84-2f1b-4a2a-ad4d-6fdd104409c7",
+            "containerId": "09321e2a-b751-4bb2-bc52-be17afd4c9a7",
+            "name": "ADMIN_CREDENTIAL_PATCH",
+            "url": "http://localhost:3000/admin/credential",
+            "method": "PATCH",
+            "sortNum": 70000,
+            "created": "2023-12-19T03:33:26.691Z",
+            "modified": "2023-12-19T03:33:26.691Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"oldPassword\" : \"12345678\",\n  \"newPassword\" : \"87654321\"\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "0083f3fe-808f-4205-9b9d-c504010952ca",
+            "colId": "8d96fd84-2f1b-4a2a-ad4d-6fdd104409c7",
+            "containerId": "d4b5eadb-140b-45fe-8c0a-d6cc44ef4b88",
+            "name": "ADD_CAT",
+            "url": "http://localhost:3000/rooms/category",
+            "method": "POST",
+            "sortNum": 80000,
+            "created": "2023-12-19T03:33:26.692Z",
+            "modified": "2023-12-19T12:12:24.010Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"category\" : \"suite\",\n  \"price\" : 76000\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "05c5b3ac-a49b-47aa-80ae-011a4f9756e2",
+            "colId": "8d96fd84-2f1b-4a2a-ad4d-6fdd104409c7",
+            "containerId": "d4b5eadb-140b-45fe-8c0a-d6cc44ef4b88",
+            "name": "PUT_CAT",
+            "url": "http://localhost:3000/rooms/category/CAT-354157579346",
+            "method": "PUT",
+            "sortNum": 90000,
+            "created": "2023-12-19T03:33:26.693Z",
+            "modified": "2023-12-19T03:33:26.693Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"category\" : \"deluxe\",\n  \"price\" : 150000\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "1b8028c7-dba8-4efe-9af9-e5abc13904f5",
+            "colId": "8d96fd84-2f1b-4a2a-ad4d-6fdd104409c7",
+            "containerId": "d4b5eadb-140b-45fe-8c0a-d6cc44ef4b88",
+            "name": "REMOVE_CAT",
+            "url": "http://localhost:3000/rooms/category/CAT-354157579346",
+            "method": "DELETE",
+            "sortNum": 100000,
+            "created": "2023-12-19T03:33:26.694Z",
+            "modified": "2023-12-19T03:33:26.694Z",
+            "headers": [],
+            "params": [],
+            "tests": []
+        },
+        {
+            "_id": "b882d638-32ff-4731-aff7-92e716d004f0",
+            "colId": "8d96fd84-2f1b-4a2a-ad4d-6fdd104409c7",
+            "containerId": "d4b5eadb-140b-45fe-8c0a-d6cc44ef4b88",
+            "name": "GET_CAT",
+            "url": "http://localhost:3000/rooms/category?search=",
+            "method": "GET",
+            "sortNum": 110000,
+            "created": "2023-12-19T03:33:26.695Z",
+            "modified": "2023-12-19T04:04:35.759Z",
+            "headers": [],
+            "params": [
+                {
+                    "name": "search",
+                    "value": "",
+                    "isPath": false
+                }
+            ],
+            "tests": []
+        },
+        {
+            "_id": "e9c1ccc9-ff05-4cca-9cd8-7a43105a8840",
+            "colId": "8d96fd84-2f1b-4a2a-ad4d-6fdd104409c7",
+            "containerId": "d4b5eadb-140b-45fe-8c0a-d6cc44ef4b88",
+            "name": "ROOM_CAT_ID",
+            "url": "http://localhost:3000/rooms/category",
+            "method": "GET",
+            "sortNum": 120000,
+            "created": "2023-12-19T03:33:26.696Z",
+            "modified": "2023-12-19T03:33:26.696Z",
+            "headers": [],
+            "params": [],
+            "tests": []
+        },
+        {
+            "_id": "e135a060-ea0b-4bf8-b545-7ce3613ab816",
+            "colId": "8d96fd84-2f1b-4a2a-ad4d-6fdd104409c7",
+            "containerId": "358b5f66-659c-488d-b91c-6a90158086b8",
+            "name": "ADD_ROOM",
+            "url": "http://localhost:3000/rooms",
+            "method": "POST",
+            "sortNum": 130000,
+            "created": "2023-12-19T03:33:26.697Z",
+            "modified": "2023-12-19T12:12:54.764Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"number\" : 104, \n  \"category\" : \"CAT-011888061983\", \n  \"smoking\" : false, \n  \"bed\" : \"double\"\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "41070620-1f55-4e7a-afb2-5d80d9c2f1cc",
+            "colId": "8d96fd84-2f1b-4a2a-ad4d-6fdd104409c7",
+            "containerId": "358b5f66-659c-488d-b91c-6a90158086b8",
+            "name": "PUT_ROOM",
+            "url": "http://localhost:3000/rooms/ROOM-109889785323",
+            "method": "PUT",
+            "sortNum": 140000,
+            "created": "2023-12-19T03:33:26.698Z",
+            "modified": "2023-12-19T03:33:26.698Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"number\" : 102, \n  \"category\" : \"CAT-548958679326\", \n  \"smoking\" : \"\", \n  \"bed\" : \"twin\"\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "146ac21f-674a-4b1f-93a1-c755996b4f05",
+            "colId": "8d96fd84-2f1b-4a2a-ad4d-6fdd104409c7",
+            "containerId": "358b5f66-659c-488d-b91c-6a90158086b8",
+            "name": "DELETE_ROOM",
+            "url": "http://localhost:3000/rooms/ROOM-514380458531",
+            "method": "DELETE",
+            "sortNum": 150000,
+            "created": "2023-12-19T03:33:26.699Z",
+            "modified": "2023-12-19T03:33:26.699Z",
+            "headers": [],
+            "params": [],
+            "tests": []
+        },
+        {
+            "_id": "ad97cf8b-d82a-4781-8002-bc6569755355",
+            "colId": "8d96fd84-2f1b-4a2a-ad4d-6fdd104409c7",
+            "containerId": "358b5f66-659c-488d-b91c-6a90158086b8",
+            "name": "GET_ROOMS",
+            "url": "http://localhost:3000/rooms?bed=double&smoking=true",
+            "method": "GET",
+            "sortNum": 160000,
+            "created": "2023-12-19T03:33:26.700Z",
+            "modified": "2023-12-19T12:19:11.552Z",
+            "headers": [],
+            "params": [
+                {
+                    "name": "bed",
+                    "value": "double",
+                    "isPath": false
+                },
+                {
+                    "name": "smoking",
+                    "value": "true",
+                    "isPath": false
+                }
+            ],
+            "tests": []
+        },
+        {
+            "_id": "227ed483-2a5a-498f-b267-3632b55ee40c",
+            "colId": "8d96fd84-2f1b-4a2a-ad4d-6fdd104409c7",
+            "containerId": "358b5f66-659c-488d-b91c-6a90158086b8",
+            "name": "GET_ROOM_ID",
+            "url": "http://localhost:3000/rooms/ROOM-109889785323",
+            "method": "GET",
+            "sortNum": 170000,
+            "created": "2023-12-19T03:33:26.701Z",
+            "modified": "2023-12-19T03:33:26.701Z",
+            "headers": [],
+            "params": [],
+            "tests": []
+        },
+        {
+            "_id": "9442c73f-62ad-448b-b122-1a6d9b1f87d5",
+            "colId": "8d96fd84-2f1b-4a2a-ad4d-6fdd104409c7",
+            "containerId": "93befd49-799f-4865-82bc-dac464fb5ac6",
+            "name": "ADD_GUEST",
+            "url": "http://localhost:3000/api/guests",
+            "method": "POST",
+            "sortNum": 180000,
+            "created": "2023-12-19T03:33:26.703Z",
+            "modified": "2024-01-01T04:28:33.429Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"idType\" : \"KTP\", \n  \"idNumber\" : \"64072208920002\", \n  \"name\" : \"Tomi\", \n  \"gender\" : \"male\", \n  \"address\" : \"Kutai Barat\"\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "3956026b-9a0c-4b46-9ecc-39777717a8ef",
+            "colId": "8d96fd84-2f1b-4a2a-ad4d-6fdd104409c7",
+            "containerId": "93befd49-799f-4865-82bc-dac464fb5ac6",
+            "name": "GET_GUESTS",
+            "url": "http://localhost:3000/guests?length=full&limit=2&search=j",
+            "method": "GET",
+            "sortNum": 190000,
+            "created": "2023-12-19T03:33:26.704Z",
+            "modified": "2023-12-19T03:33:26.704Z",
+            "headers": [],
+            "params": [
+                {
+                    "name": "length",
+                    "value": "full",
+                    "isPath": false
+                },
+                {
+                    "name": "limit",
+                    "value": "2",
+                    "isPath": false
+                },
+                {
+                    "name": "search",
+                    "value": "j",
+                    "isPath": false
+                }
+            ],
+            "tests": []
+        },
+        {
+            "_id": "acad028b-2f97-4436-9456-93133e5c57eb",
+            "colId": "8d96fd84-2f1b-4a2a-ad4d-6fdd104409c7",
+            "containerId": "93befd49-799f-4865-82bc-dac464fb5ac6",
+            "name": "DELETE_GUEST",
+            "url": "http://localhost:3000/guests/GUEST-95068642498409666247350264",
+            "method": "DELETE",
+            "sortNum": 200000,
+            "created": "2023-12-19T03:33:26.705Z",
+            "modified": "2023-12-19T03:33:26.705Z",
+            "headers": [],
+            "params": [],
+            "tests": []
+        },
+        {
+            "_id": "ef00b7a0-99f3-4428-adf0-db8c68006882",
+            "colId": "8d96fd84-2f1b-4a2a-ad4d-6fdd104409c7",
+            "containerId": "0c12241a-4e9b-470a-939d-c57cab696bc1",
+            "name": "ADD_BOOKING",
+            "url": "http://localhost:3000/api/bookings",
+            "method": "POST",
+            "sortNum": 210000,
+            "created": "2023-12-19T03:33:26.706Z",
+            "modified": "2024-01-01T03:01:12.081Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"guest\": 0,\n  \"bookedBy\" : \"Ronda\",\n  \"room\" : \"ROOM-413158293521\",\n  \"startDate\" : \"2024-01-01\",\n  \"endDate\" : \"2024-01-03\",\n  \"deposit\": \"100000\",\n  \"checkedIn\" : false,\n  \"paid\" : 0\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "486a303d-5dbd-4fcc-8809-c0b8572808ba",
+            "colId": "8d96fd84-2f1b-4a2a-ad4d-6fdd104409c7",
+            "containerId": "0c12241a-4e9b-470a-939d-c57cab696bc1",
+            "name": "GET_BOOKING_INFO",
+            "url": "http://localhost:3000/api/bookings/validate?start=2022-12-21&end=2022-12-21&room=ROOM-252397624214",
+            "method": "GET",
+            "sortNum": 220000,
+            "created": "2023-12-19T05:25:08.713Z",
+            "modified": "2024-01-04T03:36:09.762Z",
+            "headers": [],
+            "params": [
+                {
+                    "name": "start",
+                    "value": "2022-12-21",
+                    "isPath": false
+                },
+                {
+                    "name": "end",
+                    "value": "2022-12-21",
+                    "isPath": false
+                },
+                {
+                    "name": "room",
+                    "value": "ROOM-252397624214",
+                    "isPath": false
+                }
+            ],
+            "tests": []
+        },
+        {
+            "_id": "8575ab41-d147-4ccd-a80a-7a0119b42747",
+            "colId": "8d96fd84-2f1b-4a2a-ad4d-6fdd104409c7",
+            "containerId": "0c12241a-4e9b-470a-939d-c57cab696bc1",
+            "name": "GET_ROOM_AVAILABILITY",
+            "url": "http://localhost:3000/bookings/rooms/ROOM-252397624214",
+            "method": "GET",
+            "sortNum": 230000,
+            "created": "2023-12-19T11:47:53.251Z",
+            "modified": "2023-12-19T11:51:42.770Z",
+            "headers": [],
+            "params": [],
+            "tests": []
+        },
+        {
+            "_id": "2692bc26-3674-4594-b65b-e8b90244805d",
+            "colId": "8d96fd84-2f1b-4a2a-ad4d-6fdd104409c7",
+            "containerId": "0c12241a-4e9b-470a-939d-c57cab696bc1",
+            "name": "GET_BOOKING_BY_DATE",
+            "url": "http://localhost:3000/api/bookings/date",
+            "method": "GET",
+            "sortNum": 240000,
+            "created": "2023-12-19T12:05:35.215Z",
+            "modified": "2024-01-04T03:36:45.746Z",
+            "headers": [],
+            "params": [],
+            "tests": []
+        },
+        {
+            "_id": "2ea8bde8-4160-480a-b448-9f73e5adbe06",
+            "colId": "8d96fd84-2f1b-4a2a-ad4d-6fdd104409c7",
+            "containerId": "0c12241a-4e9b-470a-939d-c57cab696bc1",
+            "name": "PATCH_BOOKING",
+            "url": "http://localhost:3000/bookings/jxcw3o2bpe67fqxtgscs0acvpv7ecthufhijas6a",
+            "method": "PATCH",
+            "sortNum": 250000,
+            "created": "2023-12-20T03:22:18.726Z",
+            "modified": "2023-12-20T03:56:22.200Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"deposit\": \"500000\"\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "6725e73a-a1df-48b2-a3aa-f992543eb0fd",
+            "colId": "8d96fd84-2f1b-4a2a-ad4d-6fdd104409c7",
+            "containerId": "0c12241a-4e9b-470a-939d-c57cab696bc1",
+            "name": "GET_BOOKING_BY_CHECKIN",
+            "url": "http://localhost:3000/api/bookings/checkin",
+            "method": "GET",
+            "sortNum": 260000,
+            "created": "2024-01-04T07:42:24.546Z",
+            "modified": "2024-01-04T07:42:38.371Z",
+            "headers": [],
+            "params": [],
+            "tests": []
+        },
+        {
+            "_id": "fb32e13e-a32f-4333-b180-31a8b6a54af5",
+            "colId": "8d96fd84-2f1b-4a2a-ad4d-6fdd104409c7",
+            "containerId": "a67446f1-2c9a-46ef-9649-ca1daeb14ddf",
+            "name": "PUT_EXTRA",
+            "url": "http://localhost:3000/api/extraprice",
+            "method": "PUT",
+            "sortNum": 270000,
+            "created": "2024-01-06T22:42:40.016Z",
+            "modified": "2024-01-06T22:45:45.632Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"person\" : 20000,\n  \"bed\" : 10000,\n  \"breakfast\" : 1000\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "1c745905-898a-4963-a7b8-ce643b2a1f90",
+            "colId": "8d96fd84-2f1b-4a2a-ad4d-6fdd104409c7",
+            "containerId": "0c12241a-4e9b-470a-939d-c57cab696bc1",
+            "name": "GET_BOOKING_STATISTIC",
+            "url": "http://localhost:3000/api/bookings/statistic",
+            "method": "GET",
+            "sortNum": 280000,
+            "created": "2024-01-08T04:49:05.681Z",
+            "modified": "2024-01-08T04:49:19.445Z",
+            "headers": [],
+            "params": [],
+            "tests": []
+        }
+    ]
+}

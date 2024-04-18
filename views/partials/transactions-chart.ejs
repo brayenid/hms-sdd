@@ -1,0 +1,101 @@
+<h2 class="subhead">Frekuensi Transaksi</h2>
+<div id="transaction-chart"></div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', async () => {
+    const transactions = (await axios.get('/transaction/statistic/freq?limit=31')).data.data
+    const transactionArr = []
+    transactions.forEach((tran) => {
+      transactionArr.push(tran.transaction_freq)
+    })
+
+    const monthLabels = []
+
+    transactions.forEach((tran) => {
+      monthLabels.push(tran.month)
+    })
+    const options = {
+      series: [
+        {
+          name: 'Frekuensi Transaksi',
+          data: transactionArr
+        }
+      ],
+      chart: {
+        height: 350,
+        type: 'line',
+        dropShadow: {
+          enabled: true,
+          color: '#000',
+          top: 18,
+          left: 7,
+          blur: 10,
+          opacity: 0.2
+        },
+        toolbar: {
+          show: false
+        }
+      },
+      colors: ['#77B6EA', '#545454'],
+      dataLabels: {
+        enabled: true
+      },
+      stroke: {
+        curve: 'smooth'
+      },
+      grid: {
+        borderColor: '#e7e7e7',
+        row: {
+          colors: ['rgba(255, 255, 255, .2)', 'transparent'], // takes an array which will be repeated on columns
+          opacity: 0.5
+        }
+      },
+      markers: {
+        size: 1
+      },
+      xaxis: {
+        categories: [...new Set(monthLabels)].sort(),
+        title: {
+          text: 'Bulan',
+          style: {
+            fontFamily: 'Inter, sans-serif',
+            cssClass: 'text-xs font-normal fill-gray-500 dark:fill-gray-400'
+          }
+        },
+        labels: {
+          style: {
+            fontFamily: 'Inter, sans-serif',
+            cssClass: 'text-xs font-normal fill-gray-500 dark:fill-gray-400'
+          }
+        }
+      },
+      yaxis: {
+        title: {
+          text: 'Frekuensi Transaksi',
+          style: {
+            fontFamily: 'Inter, sans-serif',
+            cssClass: 'text-xs font-normal fill-gray-500 dark:fill-gray-400'
+          }
+        },
+        labels: {
+          style: {
+            fontFamily: 'Inter, sans-serif',
+            cssClass: 'text-xs font-normal fill-gray-500 dark:fill-gray-400'
+          }
+        },
+        min: 1,
+        max: 500
+      },
+      legend: {
+        position: 'top',
+        horizontalAlign: 'right',
+        floating: true,
+        offsetY: -25,
+        offsetX: -5
+      }
+    }
+
+    const chart = new ApexCharts(document.querySelector('#transaction-chart'), options)
+    chart.render()
+  })
+</script>
