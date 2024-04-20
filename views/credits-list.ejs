@@ -1,7 +1,35 @@
 <section class="dark:bg-gray-900 flex flex-col gap-4">
   <div class="content_container">
+    <h2 class="mb-4 text-xl font-bold text-gray-900 dark:text-white">Tambahkan Tagihan Baru</h2>
+    <form id="form-guest" class="main_form">
+      <div class="flex flex-col gap-3">
+        <div class="sm:col-span-1 relative">
+          <label for="creditor-id"
+            >ID Kreditur -
+            <a
+              class="text-blue-500 hover:underline cursor-pointer"
+              onClick="javascript:window.open('/popup/guest','Tambah Tamu Baru','width=600,height=500')"
+              >Tambah Kreditur</a
+            ></label
+          >
+          <input type="text" id="creditor-id" placeholder="Masukan ID kreditur (tamu)" required="" />
+          <ul id="creditor-suggestion" class="suggestion-box hidden"></ul>
+        </div>
+        <div class="sm:col-span-1">
+          <label for="credit-detail">Keterangan</label>
+          <input type="text" id="credit-detail" placeholder="Masukan keterangan singkat" required="" />
+        </div>
+        <div class="sm:col-span-1">
+          <label for="due-date">Jatuh Tempo</label>
+          <input type="date" id="due-date" required="" />
+        </div>
+      </div>
+      <button type="submit">Tambah</button>
+    </form>
+  </div>
+  <div class="content_container">
     <h2 class="subhead">Daftar Kredit</h2>
-    <%- include('partials/checkin-table-header') %>
+    <%- include('partials/credits-table-header') %>
     <div class="table_container">
       <table id="table-cats" class="table_fb">
         <thead class="table_fb__head">
@@ -16,9 +44,9 @@
           <% credits.forEach(credit => { %>
           <tr>
             <td><%= credit.id %></td>
-            <td><%= credit.name %></td>
+            <td class="text-left"><%= credit.name %></td>
             <td><%= formatISODate(credit.due) %></td>
-            <td><a class="text-blue-500 hover:underline" href="/credits/detail/<%= credit.due %>">Lihat</a></td>
+            <td><a class="text-blue-500 hover:underline" href="/credits/detail/<%= credit.id %>">Lihat</a></td>
           </tr>
           <% }) %>
         </tbody>
@@ -26,3 +54,56 @@
     </div>
   </div>
 </section>
+<script>
+  new SuggestionBox({
+    inputElement: '#creditor-id',
+    element: '#creditor-suggestion',
+    apiGet: '/api/guests'
+  })
+
+  const formGuestEl = document.querySelector('#form-guest')
+  formGuestEl.addEventListener('submit', async (e) => {
+    e.preventDefault()
+
+    const creditor = document.querySelector('#creditor-id').value
+    const detail = document.querySelector('#credit-detail').value
+    const due = document.querySelector('#due-date').value
+
+    const payload = {
+      creditor,
+      detail,
+      due
+    }
+
+    const { isConfirmed } = await Swal.fire({
+      title: 'Tambah Kredit',
+      text: 'Yakin menambahkan data kredit baru?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Tambahkan'
+    })
+
+    if (isConfirmed) {
+      try {
+        await axios.post('/api/credit', payload)
+        await Swal.fire({
+          title: 'Berhasil!',
+          text: 'Anda berhasil menambahkan data kredit baru',
+          icon: 'success',
+          confirmButtonText: 'Oke!'
+        })
+        window.location.reload()
+      } catch (error) {
+        const errMessage = error.response.data.message
+        await Swal.fire({
+          title: 'Error!',
+          text: errMessage,
+          icon: 'error',
+          confirmButtonText: 'Tutup'
+        })
+      }
+    }
+  })
+</script>

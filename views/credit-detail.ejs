@@ -1,0 +1,473 @@
+<section class="dark:bg-gray-900 flex flex-col gap-4">
+  <div class="bg-white p-6 shadow rounded-lg dark:bg-gray-800">
+    <h2 class="text-lg dark:text-white font-bold mb-2">Tambah Item Kredit</h2>
+
+    <form class="main_form" id="form-credit">
+      <div class="grid gap-4 lg:grid-cols-3 lg:gap-6">
+        <div class="lg:col-span-1 relative">
+          <label for="settled-id">Nomor Tagihan </label>
+          <input type="text" id="settled-id" placeholder="Masukan ID tagihan" autocomplete="off" required />
+          <ul id="credits-suggestion" class="suggestion-box hidden"></ul>
+        </div>
+        <div class="lg:col-span-1">
+          <label for="credit-total">Total Tagihan</label>
+          <input type="text" id="credit-total" placeholder="Masukan jumlah terbayar" autocomplete="off" required />
+        </div>
+        <div class="lg:col-span-1">
+          <label for="credit-paid">Terbayar</label>
+          <input
+            type="text"
+            id="credit-paid"
+            placeholder="Masukan jumlah terbayar"
+            value="0"
+            autocomplete="off"
+            required />
+        </div>
+      </div>
+      <div class="flex justify-end">
+        <button type="submit">Tambah</button>
+      </div>
+    </form>
+  </div>
+  <div class="bg-white p-6 shadow rounded-lg dark:bg-gray-800 dark:text-white">
+    <header>
+      <h2 class="text-lg dark:text-white font-bold mb-2">Detail Kredit</h2>
+      <table class="text-sm text-gray-600">
+        <tr>
+          <td class="min-w-48">No. Tagihan</td>
+          <td>:</td>
+          <td class="px-2"><%= credit.id %></td>
+        </tr>
+        <tr>
+          <td>Nama Kreditur</td>
+          <td>:</td>
+          <td class="px-2"><%= credit.guest %></td>
+        </tr>
+        <tr>
+          <td>Detail Kegiatan</td>
+          <td>:</td>
+          <td class="px-2"><%= credit.detail %></td>
+        </tr>
+        <tr>
+          <td>Tanggal</td>
+          <td>:</td>
+          <td class="px-2"><%= formatISODate(credit.createdAt) %></td>
+        </tr>
+        <tr>
+          <td>Jatuh Tempo</td>
+          <td>:</td>
+          <td class="px-2"><%= formatISODate(credit.due) %></td>
+        </tr>
+      </table>
+    </header>
+    <main class="overflow-x-auto">
+      <div
+        class="flex items-center p-4 my-4 text-sm text-blue-800 rounded-lg bg-blue-50 dark:bg-gray-800 dark:text-blue-400"
+        role="alert">
+        <svg
+          class="flex-shrink-0 inline w-4 h-4 me-3"
+          aria-hidden="true"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="currentColor"
+          viewBox="0 0 20 20">
+          <path
+            d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
+        </svg>
+        <span class="sr-only">Info</span>
+        <div>
+          Lakukan pengubahan nilai <strong>Terbayar</strong> dengan klik nilainya, lalu simpan. Lakukan seleksi item
+          tagihan yang ingin dicetak dengan mencentang checkbox paling kanan (biarkan kosong untuk mencetak semua).
+        </div>
+      </div>
+      <table class="my-4 text-sm w-full">
+        <thead class="text-left">
+          <tr>
+            <th class="p-1 border-b dark:border-gray-600">No. Transaksi</th>
+            <th class="p-1 border-b dark:border-gray-600">Nama Transaksi</th>
+            <th class="p-1 border-b dark:border-gray-600">Harga</th>
+            <th class="p-1 border-b dark:border-gray-600">Terbayar</th>
+            <th class="p-1 border-b dark:border-gray-600">Aksi</th>
+            <th class="p-1 border-b dark:border-gray-600">Cetak</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (credit.transactions.length > 0) { %> <% credit.transactions.forEach(trx => { %>
+          <tr>
+            <td class="p-1 border-b dark:border-gray-600 w-48">
+              <a class="text-blue-500 hover:underline" href="/transaction/<%= trx.settledTransaction %>"
+                ><%= trx.settledTransaction %></a
+              >
+            </td>
+            <td class="p-2 border-b dark:border-gray-600"><%= trx.category %></td>
+            <td class="p-2 border-b dark:border-gray-600"><%=addSeparator(trx.amount) %></td>
+            <td class="p-2 border-b dark:border-gray-600 w-11">
+              <input
+                id="<%= trx.settledId %>"
+                class="!p-0 bg-transparent border-none font-semibold text-sm credit-paid-input cursor-pointer"
+                type="text"
+                value="<%= addSeparator(trx.paid) %>"
+                data-max-num="<%= trx.amount %>" />
+            </td>
+            <td class="p-2 border-b dark:border-gray-600 w-56">
+              <div class="space-x-2 space-y-2">
+                <button
+                  data-settled-id="<%= trx.settledId %>"
+                  data-trx="<%= trx.id %>"
+                  class="!m-0 items-center p-1 text-xs font-medium text-center border border-blue-600 text-blue-600 bg-blue-50 rounded-lg focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-900 hover:bg-blue-100 credit-save-btn hidden">
+                  Simpan
+                </button>
+                <button
+                  data-settled-id="<%= trx.settledId %>"
+                  data-trx="<%= trx.id %>"
+                  onclick="deleteCreditTransaction('<%= trx.id %>')"
+                  class="!m-0 inline-flex items-center p-1 text-xs font-medium text-center border border-red-600 text-red-600 bg-red-50 rounded-lg focus:ring-4 focus:ring-red-200 dark:focus:ring-red-900 hover:bg-red-100 credit-delete-btn">
+                  Hapus
+                </button>
+              </div>
+            </td>
+            <td class="p-2 border-b dark:border-gray-600 w-32">
+              <input type="checkbox" class="printed-row rounded" value="<%= trx.settledTransaction %>" />
+            </td>
+          </tr>
+          <% }) %> <% } else { %>
+          <tr>
+            <td class="p-2 border-b bg-gray-100 dark:border-gray-600 w-48 text-center" colspan="6">Tidak ada data</td>
+          </tr>
+          <% } %>
+          <tr>
+            <td class="p-2 border-b dark:border-gray-600 w-48 text-center" colspan="2">Total</td>
+            <td class="p-2 border-b dark:border-gray-600"><%= addSeparator(totalAmount) %></td>
+            <td class="p-2 border-b dark:border-gray-600" id="total-paid" colspan="3">0</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="flex justify-end gap-2">
+        <button
+          onclick="submitPrint()"
+          class="flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-white bg-cyan-700 border border-gray-200 rounded-lg md:w-auto focus:outline-none hover:bg-cyan-800 hover:text-white focus:ring-4 focus:ring-cyan-200 dark:focus:ring-cyan-900 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
+          Cetak
+        </button>
+        <a
+          onClick="javascript:window.open('/credits/detail/<%= credit.id %>/edit','Tambah Tamu Baru','width=600,height=500')"
+          target="_blank"
+          class="flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-white bg-blue-700 border border-gray-200 rounded-lg md:w-auto focus:outline-none hover:bg-blue-800 hover:text-white focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-900 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700 cursor-pointer"
+          >Edit</a
+        >
+        <button
+          onclick="deleteCredit('<%= credit.id %>')"
+          class="flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-white bg-red-700 border border-gray-200 rounded-lg md:w-auto focus:outline-none hover:bg-red-800 hover:text-white focus:ring-4 focus:ring-red-200 dark:focus:ring-red-900 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
+          Hapus
+        </button>
+        <a
+          href="/credits"
+          class="flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-white bg-blue-700 border border-gray-200 rounded-lg md:w-auto focus:outline-none hover:bg-blue-800 hover:text-white focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-900 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700 cursor-pointer"
+          >Kembali</a
+        >
+      </div>
+    </main>
+  </div>
+</section>
+<script>
+  const creditTotalAdd = document.querySelector('#credit-total')
+  const creditPaidAdd = document.querySelector('#credit-paid')
+
+  const creditPaidInput = document.querySelectorAll('.credit-paid-input')
+  const creditSaveBtn = document.querySelectorAll('.credit-save-btn')
+  const creditDeleteBtn = document.querySelectorAll('.credit-delete-btn')
+  const totalPaidEl = document.querySelector('#total-paid')
+  let totalPaid = 0
+  let limitCreditPaid = 0
+
+  const evaluateTotalPaid = () => {
+    let arr = []
+    creditPaidInput.forEach((paid) => {
+      const paidItem = CurrencyBeautify.removeCurrency(paid.value)
+      arr.push(paidItem)
+    })
+
+    totalPaid = arr.reduce((a, b) => {
+      return a + b
+    }, 0)
+
+    totalPaidEl.innerHTML = CurrencyBeautify.addSeparator(totalPaid)
+  }
+
+  creditPaidInput.forEach((paidEl) => {
+    new CurrencyBeautify({
+      inputElement: `#${paidEl.id}`
+    })
+    const limitCreditInput = (e) => {
+      const totalPriceComplete = Number(e.target.dataset.maxNum)
+      if (CurrencyBeautify.removeCurrency(e.target.value) > totalPriceComplete) {
+        e.target.value = CurrencyBeautify.addSeparator(totalPriceComplete)
+        return
+      }
+    }
+
+    const creditPaidChange = (e) => {
+      saveBtn(e)
+      limitCreditInput(e)
+      evaluateTotalPaid()
+    }
+
+    const saveBtn = (e) => {
+      const button = document.querySelector(`button[data-settled-id="${e.target.id}"]`)
+      button.classList.remove('hidden')
+    }
+
+    paidEl.addEventListener('change', creditPaidChange)
+  })
+
+  const saveChange = async (e) => {
+    const settledId = e.target.dataset.settledId
+    const trxId = e.target.dataset.trx
+    const inputEl = document.querySelector(`#${settledId}`)
+    const button = e.target
+
+    try {
+      const response = await fetch('/api/credit-transaction', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          id: trxId,
+          paid: CurrencyBeautify.removeCurrency(inputEl.value),
+          amount: Number(inputEl.dataset.maxNum)
+        })
+      })
+      const responseJson = await response.json()
+      if (response.status !== 200) {
+        throw new Error(responseJson.message)
+      }
+      button.classList.add('hidden')
+
+      console.log(responseJson.message)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  creditSaveBtn.forEach((btn) => {
+    btn.addEventListener('click', saveChange)
+  })
+
+  document.addEventListener('DOMContentLoaded', () => {
+    evaluateTotalPaid()
+  })
+
+  const deleteCreditTransaction = async (id) => {
+    const { isConfirmed } = await Swal.fire({
+      icon: 'question',
+      title: 'Hapus Item Tagihan',
+      text: 'Yakin menghapus item tagihan ini',
+      showCancelButton: true,
+      cancelButtonText: 'Batal',
+      confirmButtonText: 'Hapus'
+    })
+
+    if (isConfirmed) {
+      try {
+        const response = await fetch(`/api/credit-transaction/${id}`, {
+          method: 'DELETE'
+        })
+        const responseJson = await response.json()
+        if (response.status !== 200) {
+          throw new Error(responseJson.message)
+        }
+
+        Swal.fire({
+          icon: 'success',
+          title: 'Sukses',
+          text: 'Item tagihan berhasil dihapus',
+          showConfirmButton: true,
+          confirmButtonText: 'Ok'
+        })
+
+        setTimeout(() => {
+          window.location.reload()
+        }, 1000)
+      } catch (error) {
+        console.log(error.message)
+        Swal.fire({
+          icon: 'error',
+          title: 'Gagal',
+          text: 'Item tagihan gagal dihapus',
+          showConfirmButton: true,
+          confirmButtonText: 'Ok'
+        })
+      }
+    }
+  }
+
+  new CurrencyBeautify({
+    inputElement: '#credit-paid'
+  })
+
+  new CurrencyBeautify({
+    inputElement: '#credit-total'
+  })
+
+  new SuggestionBox({
+    inputElement: '#settled-id',
+    element: '#credits-suggestion',
+    apiGet: '/api/transactions',
+    listChildEl: (data) => {
+      return `
+      <li class="suggestion-item" title="${data.name} - ${data.id}" data-id="${data.id}" data-total="${data.grandTotal}">${data.name} - ${data.id}</li>`
+    },
+    onSelect: (data) => {
+      limitCreditPaid = Number(data.total)
+      creditTotalAdd.value = CurrencyBeautify.addSeparator(data.total)
+    }
+  })
+
+  const limitCreditInput = (e) => {
+    if (CurrencyBeautify.removeCurrency(e.target.value) > limitCreditPaid) {
+      e.target.value = CurrencyBeautify.addSeparator(limitCreditPaid)
+      return
+    }
+  }
+
+  creditTotalAdd.addEventListener('change', limitCreditInput)
+  creditPaidAdd.addEventListener('change', limitCreditInput)
+
+  // ADD CREDIT RECORD
+  const creditId = '<%= credit.id %>'
+  document.querySelector('#form-credit').addEventListener('submit', async (e) => {
+    e.preventDefault()
+
+    await submitCredit()
+  })
+
+  const submitCredit = async () => {
+    const settledInvoice = document.querySelector('#settled-id').value
+    const creditTotal = CurrencyBeautify.removeCurrency(document.querySelector('#credit-total').value)
+    const creditPaid = CurrencyBeautify.removeCurrency(document.querySelector('#credit-paid').value)
+
+    try {
+      const { isConfirmed } = await Swal.fire({
+        icon: 'question',
+        title: 'Tambah Item Tagihan',
+        text: 'Yakin menambah item tagihan ini',
+        showCancelButton: true,
+        cancelButtonText: 'Batal',
+        confirmButtonText: 'Tambah'
+      })
+
+      if (isConfirmed) {
+        try {
+          const response = await fetch('/api/credit-transaction', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              creditId,
+              settledInvoice,
+              creditPaid,
+              creditTotal
+            })
+          })
+
+          const responseJson = await response.json()
+          if (response.status !== 201) {
+            throw new Error(responseJson.message)
+          }
+
+          Swal.fire({
+            icon: 'success',
+            title: 'Sukses',
+            text: 'Item tagihan berhasil ditambahkan',
+            showConfirmButton: true,
+            confirmButtonText: 'Ok'
+          })
+
+          window.location.reload()
+        } catch (error) {
+          console.log(error.message)
+          Swal.fire({
+            icon: 'error',
+            title: 'Gagal',
+            text: 'Item tagihan gagal ditambahkan',
+            showConfirmButton: true,
+            confirmButtonText: 'Ok'
+          })
+        }
+      }
+    } catch (error) {
+      const errMessage = error?.response?.data?.message || error.message
+      throw new Error(errMessage)
+    }
+  }
+
+  const submitPrint = () => {
+    const checkboxesEl = document.querySelectorAll('.printed-row')
+
+    let checkboxesValue = []
+
+    checkboxesEl.forEach((checkbox) => {
+      if (checkbox.checked) {
+        checkboxesValue.push(checkbox.value)
+      }
+    })
+
+    const stringify = checkboxesValue.join('_')
+
+    const a = document.createElement('a')
+
+    if (checkboxesValue.length > 0) {
+      a.href = `/credits/detail/<%= credit.id %>/print?rows=${stringify}`
+    } else {
+      a.href = '/credits/detail/<%= credit.id %>/print'
+    }
+
+    a.target = '_blank'
+    a.click()
+  }
+
+  //DANGER ZONE
+  const deleteCredit = async (id) => {
+    const { isConfirmed } = await Swal.fire({
+      icon: 'question',
+      title: 'Hapus Tagihan',
+      text: 'Yakin menghapus tagihan ini',
+      showCancelButton: true,
+      cancelButtonText: 'Batal',
+      confirmButtonText: 'Hapus'
+    })
+
+    if (isConfirmed) {
+      try {
+        const response = await fetch(`/api/credit/${id}`, {
+          method: 'DELETE'
+        })
+        const responseJson = await response.json()
+        if (response.status !== 200) {
+          throw new Error(responseJson.message)
+        }
+
+        Swal.fire({
+          icon: 'success',
+          title: 'Sukses',
+          text: 'Tagihan berhasil dihapus',
+          showConfirmButton: true,
+          confirmButtonText: 'Ok'
+        })
+
+        setTimeout(() => {
+          window.location.replace('/credits')
+        }, 1000)
+      } catch (error) {
+        console.log(error.message)
+        Swal.fire({
+          icon: 'error',
+          title: 'Gagal',
+          text: 'Tagihan gagal dihapus',
+          showConfirmButton: true,
+          confirmButtonText: 'Ok'
+        })
+      }
+    }
+  }
+</script>

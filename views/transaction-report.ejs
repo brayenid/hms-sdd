@@ -14,7 +14,6 @@
           <tr>
             <th class="py-2 px-4 border-b dark:border-gray-600">Invoice</th>
             <th class="py-2 px-4 border-b dark:border-gray-600">Transaksi</th>
-            <th class="py-2 px-4 border-b dark:border-gray-600">Asal</th>
             <th class="py-2 px-4 border-b dark:border-gray-600">Check In</th>
             <th class="py-2 px-4 border-b dark:border-gray-600">Check Out</th>
             <th class="py-2 px-4 border-b dark:border-gray-600">Room</th>
@@ -23,17 +22,17 @@
             <th class="py-2 px-4 border-b dark:border-gray-600">Sales</th>
             <th class="py-2 px-4 border-b dark:border-gray-600">Discount</th>
             <th class="py-2 px-4 border-b dark:border-gray-600">Grand Total</th>
+            <th class="py-2 px-4 border-b dark:border-gray-600">Kredit</th>
             <th class="py-2 px-4 border-b dark:border-gray-600">Settled Date</th>
           </tr>
         </thead>
         <tbody>
           <% if (reports.length) { %> <% reports.forEach(report => { %>
-          <tr>
+          <tr class="<%= report.totalCredit > 0 ? 'bg-red-100' : '' %>">
             <td class="py-2 px-4 border-b dark:border-gray-600">
               <a class="text-blue-500 hover:underline" href="/transaction/<%= report.id %>"><%= report.id %></a>
             </td>
             <td class="py-2 px-4 border-b dark:border-gray-600">Room # <%= report.number %></td>
-            <td class="py-2 px-4 border-b dark:border-gray-600"><%= report.source %></td>
             <td class="py-2 px-4 border-b dark:border-gray-600">
               <%= report.startDate.split('-').reverse().join('-') %>
             </td>
@@ -46,6 +45,7 @@
             <td class="py-2 px-4 border-b dark:border-gray-600"><%= addSeparator(report.totalSales) %></td>
             <td class="py-2 px-4 border-b dark:border-gray-600"><%= addSeparator(report.discount) %></td>
             <td class="py-2 px-4 border-b dark:border-gray-600"><%= addSeparator(report.grandTotal) %></td>
+            <td class="py-2 px-4 border-b dark:border-gray-600"><%= addSeparator(report.totalCredit) %></td>
             <td class="py-2 px-4 border-b dark:border-gray-600">
               <%= report.settledDate.toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: '2-digit' })
               %>
@@ -56,8 +56,9 @@
             <td class="py-2 px-4 border-b text-center dark:border-gray-600" colspan="12">Tidak ada data</td>
           </tr>
           <% } %>
-          <td class="py-2 px-4 border-b text-center dark:border-gray-600" colspan="10">Total</td>
-          <td class="py-2 px-4 border-b dark:border-gray-600" colspan="2"><%= addSeparator(total) %></td>
+          <td class="py-2 px-4 border-b text-center dark:border-gray-600" colspan="9">Total</td>
+          <td class="py-2 px-4 border-b dark:border-gray-600" colspan="1"><%= addSeparator(total) %></td>
+          <td class="py-2 px-4 border-b dark:border-gray-600" colspan="2"><%= addSeparator(creditGrandTotal) %></td>
         </tbody>
       </table>
     </div>

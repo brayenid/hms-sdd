@@ -1,0 +1,99 @@
+<div class="bg-white p-4 max-w-screen-lg mx-auto mt-4">
+  <header class="flex justify-between">
+    <div class="max-w-96">
+      <h2 class="text-lg dark:text-white font-bold uppercase mb-2">Tagihan</h2>
+      <table class="text-xs">
+        <tr>
+          <td class="min-w-36">No. Tagihan</td>
+          <td>:</td>
+          <td class="px-2"><%= credit.id %></td>
+        </tr>
+        <tr>
+          <td>Nama Kreditur</td>
+          <td>:</td>
+          <td class="px-2"><%= credit.guest %></td>
+        </tr>
+        <tr>
+          <td>Detail Kegiatan</td>
+          <td>:</td>
+          <td class="px-2"><%= credit.detail %></td>
+        </tr>
+        <tr>
+          <td>Tanggal</td>
+          <td>:</td>
+          <td class="px-2"><%= formatISODate(credit.createdAt) %></td>
+        </tr>
+        <tr>
+          <td>Jatuh Tempo</td>
+          <td>:</td>
+          <td class="px-2"><%= formatISODate(credit.due) %></td>
+        </tr>
+      </table>
+    </div>
+    <div class="max-w-36">
+      <img class="max-w-28" src="/logo.png" alt="" />
+
+      <address class="mt-2 not-italic text-[0.6rem] text-gray-800">
+        <%= hotel.address %>, <%= hotel.city %>, <%= hotel.zip %>
+      </address>
+      <p class="text-[0.6rem]"><%= hotel.phone %></p>
+    </div>
+  </header>
+  <main class="overflow-x-auto">
+    <table class="my-4 text-xs w-full">
+      <thead class="text-left">
+        <tr>
+          <th class="p-1 border-b dark:border-gray-600">No. Transaksi</th>
+          <th class="p-1 border-b dark:border-gray-600">Nama</th>
+          <th class="p-1 border-b dark:border-gray-600">Tanggal</th>
+          <th class="p-1 border-b dark:border-gray-600">Harga (Rp)</th>
+          <th class="p-1 border-b dark:border-gray-600">Terbayar (Rp)</th>
+          <th class="p-1 border-b dark:border-gray-600">Sisa (Rp)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (transactions.length > 0) { %> <% transactions.forEach(trx => { %>
+        <tr>
+          <td class="p-1 border-b dark:border-gray-600 w-32"><%= trx.settledTransaction %></td>
+          <td class="p-1 border-b dark:border-gray-600"><%= trx.category %></td>
+          <td class="p-1 border-b dark:border-gray-600"><%= formatISODate(trx.settledAt) %></td>
+          <td class="p-1 border-b dark:border-gray-600 w-24"><%=addSeparator(trx.amount) %></td>
+          <td class="p-1 border-b dark:border-gray-600 w-24"><%= addSeparator(trx.paid) %></td>
+          <td class="p-1 border-b dark:border-gray-600 w-24"><%= addSeparator(trx.amount- trx.paid) %></td>
+        </tr>
+        <% }) %> <% } else { %>
+        <tr>
+          <td class="p-1 border-b dark:border-gray-600 w-48 text-center" colspan="6">Tidak ada data</td>
+        </tr>
+        <% } %>
+        <tr>
+          <td class="p-1 border-b dark:border-gray-600 w-48 text-center" colspan="3">Total</td>
+          <td class="p-1 border-b dark:border-gray-600"><%= addSeparator(totalAmount) %></td>
+          <td class="p-1 border-b dark:border-gray-600" colspan="1"><%= addSeparator(totalPaid) %></td>
+          <td class="p-1 border-b dark:border-gray-600 font-bold" colspan="1">
+            <%= addSeparator(totalAmount-totalPaid) %>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="flex justify-end mt-10 text-xs">
+      <div class="max-w-80 text-center">
+        <div class="mb-14">
+          <p>Barong Tongkok, <%= formatDate(new Date()) %></p>
+        </div>
+        <div>
+          <p>Hotel Sidodadi</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex justify-end no-print mt-10">
+      <button
+        onclick="window.print()"
+        class="flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-white bg-cyan-700 border border-gray-200 rounded-lg md:w-auto focus:outline-none hover:bg-cyan-800 hover:text-white focus:ring-4 focus:ring-cyan-200 dark:focus:ring-cyan-900 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
+        Cetak
+      </button>
+    </div>
+  </main>
+</div>

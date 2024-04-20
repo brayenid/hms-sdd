@@ -215,7 +215,7 @@
               >Tambah Tagihan</a
             ></label
           >
-          <input type="text" id="credit-id" placeholder="Masukan ID tagihan" />
+          <input type="text" id="credit-id" placeholder="Masukan ID tagihan" autocomplete="off" />
           <ul id="credits-suggestion" class="suggestion-box hidden"></ul>
         </div>
         <div class="lg:col-span-1">
@@ -580,6 +580,20 @@
     roomBySearch()
   })
 
+  /**
+   * Make a right total price towards discount
+   * bcs total price will be counted differently
+   * when it's positive or negative
+   */
+  const getTotalComplete = () => {
+    const all = finesTotal + salesTotal + (totalPrice - paid)
+    if (all >= 0) {
+      return all - totalDiscount
+    } else {
+      return all
+    }
+  }
+
   // CLOSE ROOM LIST OUTSIDE CLICK
   document.addEventListener('click', (e) => {
     if (!e.target.closest('#rooms-list-suggestion') && !e.target.closest('#room-list')) {
@@ -716,7 +730,7 @@
     roomDetailEl.innerHTML = detail
     roomNightEl.innerHTML = nightCount
 
-    roomCOTotal.value = addSeparator(finesTotal + salesTotal + (totalPrice - paid))
+    roomCOTotal.value = addSeparator(getTotalComplete())
 
     setCreditTotal()
   })
@@ -726,7 +740,7 @@
     const finesTotalEl = document.querySelector('#room-fines')
     finesTotalEl.value = addSeparator(finesTotal)
 
-    roomCOTotal.value = addSeparator(finesTotal + salesTotal + (totalPrice - paid))
+    roomCOTotal.value = addSeparator(getTotalComplete())
 
     setCreditTotal()
   })
@@ -750,7 +764,7 @@
     pay = totalPrice - paid
 
     roomTotalEl.value = addSeparator(totalPrice)
-    roomCOTotal.value = addSeparator(finesTotal + salesTotal + (totalPrice - paid))
+    roomCOTotal.value = addSeparator(getTotalComplete())
 
     setCreditTotal()
 
@@ -822,7 +836,7 @@
 
     if (isConfirmed) {
       try {
-        const newPaid = finesTotal + salesTotal + (totalPrice - paid)
+        const newPaid = getTotalComplete()
         if (isRoomChanged) {
           throw new Error('Perubahan belum disimpan')
         }
@@ -884,7 +898,7 @@
           paid: totalPrice + finesTotal - totalDiscount,
           discount: totalDiscount,
           roomNumber,
-          pay: finesTotal + salesTotal + (totalPrice - paid)
+          pay: getTotalComplete()
         }
         if (isRoomChanged) {
           throw new Error('Perubahan belum disimpan')
@@ -955,7 +969,7 @@
   const creditPaidInput = document.querySelector('#credit-paid')
 
   const setCreditTotal = () => {
-    creditTotalInput.value = addSeparator(finesTotal + salesTotal + totalPrice)
+    creditTotalInput.value = addSeparator(finesTotal + salesTotal + totalPrice - totalDiscount)
   }
 
   const limitCreditInput = (e) => {

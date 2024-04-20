@@ -178,9 +178,13 @@ router.post('/api/balance-log', authMiddlewareLogistic.validateStrict, balanceLo
 
 // CREDIT
 router.post('/api/credit', authMiddlewareFD.validate, creditController.addCredit)
+router.put('/api/credit/:creditId', authMiddlewareFD.validate, creditController.updateCredit)
+router.delete('/api/credit/:creditId', authMiddlewareFD.validate, creditController.deleteCredit)
 router.get('/api/credit', authMiddlewareFD.validate, creditController.getCredit)
 router.post('/api/credit-transaction', authMiddlewareFD.validate, creditController.addCreditTransaction)
 router.get('/api/credit/detail/:creditId', authMiddlewareFD.validate, creditController.getCreditById)
+router.patch('/api/credit-transaction', authMiddlewareFD.validate, creditController.updateCreditTransaction)
+router.delete('/api/credit-transaction/:creditId', authMiddlewareFD.validate, creditController.deleteCreditTransaction)
 
 // VIEWS
 
@@ -240,6 +244,7 @@ router.get('/transaction', authMiddlewareFDView.validate, dashboard.transactions
 router.get('/transaction/:id', authMiddlewareFDView.validate, dashboard.transactionDetail)
 router.get('/transaction/:id/print/historic', authMiddlewareFDView.validate, dashboard.invoiceHistoric)
 router.get('/transaction/:id/print', authMiddlewareFDView.validate, dashboard.invoice)
+router.get('/transaction/:id/print/mr', authMiddlewareFDView.validate, dashboard.invoiceMeetingRoom)
 
 // REPORTS
 router.get('/report', authMiddlewareManagerView.validate, dashboard.transactionReport)
@@ -282,4 +287,8 @@ router.get('/checkout/:id/extends', authMiddlewareFDView.validate, dashboard.ext
 // CREDITS
 router.get('/popup/credit', authMiddlewareFDView.validate, dashboard.creditPopup)
 router.get('/credits', authMiddlewareFDView.validate, dashboard.creditList)
+router.get('/credits/detail/:creditId', authMiddlewareFDView.validate, dashboard.creditDetail)
+router.get('/credits/detail/:creditId/edit', authMiddlewareFDView.validate, dashboard.creditPopupEdit)
+router.get('/credits/detail/:creditId/print', authMiddlewareFDView.validate, dashboard.creditDetailPrint)
+
 module.exports = router

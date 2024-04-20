@@ -20,6 +20,39 @@ const formatISODate = (isoDateString) => {
   return formattedDate
 }
 
+const formatDate = (date) => {
+  const months = [
+    'Januari',
+    'Februari',
+    'Maret',
+    'April',
+    'Mei',
+    'Juni',
+    'Juli',
+    'Agustus',
+    'September',
+    'Oktober',
+    'November',
+    'Desember'
+  ]
+
+  const dayOfMonth = date.getDate()
+  const month = months[date.getMonth()]
+  const year = date.getFullYear()
+
+  return `${dayOfMonth} ${month} ${year}`
+}
+
+const toInputDate = (date) => {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0') // Menambahkan nol di depan jika perlu
+  const day = String(date.getDate()).padStart(2, '0') // Menambahkan nol di depan jika perlu
+
+  return `${year}-${month}-${day}`
+}
+
 module.exports = {
-  formatISODate
+  formatISODate,
+  formatDate,
+  toInputDate
 }

@@ -12,19 +12,29 @@
               >Tambah Kreditur</a
             ></label
           >
-          <input type="text" id="creditor-id" placeholder="Masukan ID kreditur (tamu)" required="" />
+          <input
+            type="text"
+            id="creditor-id"
+            placeholder="Masukan ID kreditur (tamu)"
+            value="<%= credit.creditorId %>"
+            required="" />
           <ul id="creditor-suggestion" class="suggestion-box hidden"></ul>
         </div>
         <div class="sm:col-span-1">
           <label for="credit-detail">Keterangan</label>
-          <input type="text" id="credit-detail" placeholder="Masukan keterangan singkat" required="" />
+          <input
+            type="text"
+            id="credit-detail"
+            placeholder="Masukan keterangan singkat"
+            required=""
+            value="<%= credit.detail %>" />
         </div>
         <div class="sm:col-span-1">
           <label for="due-date">Jatuh Tempo</label>
-          <input type="date" id="due-date" required="" />
+          <input type="date" id="due-date" required="" value="<%= due %>" />
         </div>
       </div>
-      <button type="submit">Tambah</button>
+      <button type="submit">Ubah</button>
     </form>
   </div>
 </section>
@@ -50,21 +60,21 @@
     }
 
     const { isConfirmed } = await Swal.fire({
-      title: 'Tambah Kredit',
-      text: 'Yakin menambahkan data kredit baru?',
+      title: 'Perbaharui Kredit',
+      text: 'Yakin memperbaharui data kredit?',
       icon: 'question',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'Tambahkan'
+      confirmButtonText: 'Ubah'
     })
 
     if (isConfirmed) {
       try {
-        await axios.post('/api/credit', payload)
+        await axios.put('/api/credit/<%= credit.id %>', payload)
         await Swal.fire({
           title: 'Berhasil!',
-          text: 'Anda berhasil menambahkan data kredit baru',
+          text: 'Anda berhasil mengubah data kredit',
           icon: 'success',
           confirmButtonText: 'Oke!'
         })

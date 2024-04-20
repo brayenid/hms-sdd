@@ -37,6 +37,7 @@ class TransactionService {
           b.booked_by AS "bookedBy",
           b.start_date AS "startDate",
           b.end_date AS "endDate",
+          t.total_room + t.total_extra + t.total_fines + t.total_sales - t.discount AS "grandTotal",
           t.created_at AS "settledDate"
         FROM 
           settled_transactions t
@@ -206,6 +207,7 @@ class TransactionService {
             t.total_sales AS "totalSales",
             t.discount,
             t.total_room + t.total_extra + t.total_fines + t.total_sales - t.discount AS "grandTotal",
+            (COALESCE(ct.amount, 0) - COALESCE(ct.paid, 0)) AS "totalCredit",
             t.created_at AS "settledDate",
             a.name AS "admin"
           FROM 
@@ -222,6 +224,10 @@ class TransactionService {
             accounts a
           ON
             t.created_by = a.id
+          LEFT JOIN
+            credit_transactions ct
+          ON
+            t.id = ct.settled_transaction
           WHERE
             (t.id ILIKE $1 OR b.id ILIKE $1)
           `,

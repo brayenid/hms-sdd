@@ -56,18 +56,32 @@ class GuestService {
     if (length === 'full') {
       query = {
         text: `
-        SELECT id, identity_type AS "idType", identity_number AS "idNumber", name, gender, address, city, nationality, created_at AS "createdAt"
-        FROM guests 
-        WHERE identity_number ILIKE $1 OR name ILIKE $1
+        SELECT 
+          id, 
+          identity_type AS "idType", 
+          identity_number AS "idNumber", 
+          name, 
+          gender, 
+          address, 
+          city, 
+          nationality, 
+          created_at AS "createdAt"
+        FROM 
+          guests 
+        WHERE 
+          id ILIKE $1 OR identity_number ILIKE $1 OR name ILIKE $1
         LIMIT $2`,
         values: [`%${search}%`, Number(limit)]
       }
     } else {
       query = {
         text: `
-        SELECT id, name, address, city
-        FROM guests
-        WHERE name ILIKE $1
+        SELECT 
+          id, name, address, city
+        FROM 
+          guests
+        WHERE 
+          id ILIKE $1 OR name ILIKE $1
         LIMIT 10`,
         values: [`%${search}%`]
       }

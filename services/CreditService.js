@@ -34,6 +34,8 @@ class CreditService {
     const { creditor, detail, due, admin } = payload
     const currentTime = new Date()
 
+    console.log(creditId)
+
     try {
       const query = {
         text: `
@@ -53,6 +55,24 @@ class CreditService {
       await this._pool.query(query)
     } catch (error) {
       throw new Error(`Put credit : ${error.message}`)
+    }
+  }
+
+  async deleteCredit(creditId) {
+    try {
+      const query = {
+        text: `
+        DELETE FROM
+            credits
+        WHERE
+            id = $1
+        `,
+        values: [creditId]
+      }
+
+      await this._pool.query(query)
+    } catch (error) {
+      throw new Error(`Delete credit : ${error.message}`)
     }
   }
 
@@ -78,7 +98,7 @@ class CreditService {
       query.text += ' AND (c.due >= $3 AND c.due <= $4)'
     }
 
-    query.text += ' LIMIT $2'
+    query.text += ' ORDER BY c.due ASC LIMIT $2'
 
     const { rows } = await this._pool.query(query)
 
@@ -90,7 +110,7 @@ class CreditService {
       const query = {
         text: `
             SELECT 
-                c.id, g.name, c.detail, c.due, c.created_at AS "createdAt"
+                c.id, g.name, c.creditor AS "creditorId", c.detail, c.due, c.created_at AS "createdAt"
             FROM
                 credits c
             JOIN
@@ -110,7 +130,9 @@ class CreditService {
       const mappedDetail = {
         id: rows[0].id,
         guest: rows[0].name,
+        creditorId: rows[0].creditorId,
         due: rows[0].due,
+        detail: rows[0].detail,
         createdAt: rows[0].createdAt,
         transactions
       }
@@ -126,10 +148,12 @@ class CreditService {
       const query = {
         text: `
             SELECT
+                ct.id,
                 ct.settled_transaction AS "settledTransaction",
                 ct.amount,
                 ct.paid,
-                st.id,
+                st.id AS "settledId",
+                st.created_at AS "settledAt",
                 g.name,
                 rc.category
             FROM
@@ -156,6 +180,9 @@ class CreditService {
                 r.category = rc.id
             WHERE
                 ct.credit = $1
+            ORDER BY
+                settled_transaction
+            ASC
             `,
         values: [creditId]
       }
@@ -188,6 +215,80 @@ class CreditService {
     } catch (error) {
       console.log(error)
       throw new Error(`Add credit transaction : ${error.message}`)
+    }
+  }
+
+  async updateCreditTransaction(payload) {
+    const { id, paid, admin } = payload
+    const currentTime = new Date()
+    try {
+      const query = {
+        text: `
+        UPDATE
+          credit_transactions
+        SET
+          paid = $1,
+          updated_by = $2,
+          updated_at = $3
+        WHERE
+          id = $4
+        `,
+        values: [paid, admin, currentTime, id]
+      }
+
+      await this._pool.query(query)
+    } catch (error) {
+      console.log(error)
+      throw new Error(`Update credit transaction : ${error.message}`)
+    }
+  }
+
+  async getCreditTransactionsBySettledId(settledId) {
+    try {
+      const query = {
+        text: `
+        SELECT
+          c.id,
+          g.name
+        FROM
+          credit_transactions ct
+        JOIN
+          credits c
+        ON
+          ct.credit = c.id
+        JOIN
+          guests g
+        ON
+          c.creditor = g.id
+        WHERE
+          ct.settled_transaction = $1
+        `,
+        values: [settledId]
+      }
+
+      const { rows } = await this._pool.query(query)
+      return rows
+    } catch (error) {
+      throw new Error(`Get transaction by credit : ${error.message}`)
+    }
+  }
+
+  async deleteCreditTransaction(id) {
+    try {
+      const query = {
+        text: `
+        DELETE FROM
+          credit_transactions
+        WHERE
+          id = $1
+        `,
+        values: [id]
+      }
+
+      await this._pool.query(query)
+    } catch (error) {
+      console.log(error)
+      throw new Error(`Update credit transaction : ${error.message}`)
     }
   }
 }

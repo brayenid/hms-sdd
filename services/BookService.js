@@ -26,7 +26,7 @@ class BookingService {
       discount,
       source
     } = payload
-    const id = generateId(40, 'qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGJHKLZXCVBNM1234567890')
+    const id = `${generateId(25, 'ABCDEFGHIJKLMNOPRSTUVWXYZ1234567890')}-${Date.now()}`
     try {
       const query = {
         text: `

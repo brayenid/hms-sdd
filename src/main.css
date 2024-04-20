@@ -200,7 +200,7 @@
 }
 
 .suggestion-box li {
-  @apply p-2 truncate text-sm border-b border-gray-100 cursor-pointer hover:bg-gray-100;
+  @apply p-2 truncate !mt-0 text-sm border-b border-gray-100 cursor-pointer hover:bg-gray-100;
 }
 
 .highlight {

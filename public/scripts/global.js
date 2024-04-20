@@ -32,13 +32,23 @@ class CurrencyBeautify {
   static removeCurrency(number) {
     return parseFloat(number.toString().replace(/\./g, ''))
   }
+
+  static addSeparator(number) {
+    const numString = number.toString()
+    const parts = numString.split('.')
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+    const formattedNumber = parts.join('.')
+
+    return formattedNumber
+  }
 }
 
 class SuggestionBox {
-  constructor({ inputElement, element, apiGet, listChildEl }) {
+  constructor({ inputElement, element, apiGet, listChildEl, onSelect }) {
     this.inputElementRaw = inputElement
     this.elementRaw = element
     this.listChild = listChildEl
+    this.onSelect = onSelect
 
     this.inputElement = document.querySelector(inputElement) // Refers to the input element
     this.element = document.querySelector(element) // Refers to suggestions box (consist of list of suggestion)
@@ -97,10 +107,15 @@ class SuggestionBox {
     this.selectedIndex = index
     const items = this.element.querySelectorAll('li')
     items.forEach((item, i) => {
-      const eventId = item.dataset.id ?? ''
+      const dataset = item.dataset
+
       if (i === this.selectedIndex) {
+        if (this.onSelect) {
+          this.onSelect(dataset)
+        }
+
         item.classList.add('highlight')
-        this.inputElement.value = eventId
+        this.inputElement.value = dataset.id
       } else {
         item.classList.remove('highlight')
       }

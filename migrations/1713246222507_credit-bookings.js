@@ -9,12 +9,14 @@ exports.up = (pgm) => {
     credit: {
       type: 'VARCHAR(20)',
       references: '"credits"',
-      notNull: true
+      notNull: true,
+      onDelete: 'CASCADE'
     },
     settled_transaction: {
       type: 'VARCHAR(20)',
       references: '"settled_transactions"',
-      notNull: true
+      notNull: true,
+      onDelete: 'CASCADE'
     },
     amount: {
       type: 'INT',

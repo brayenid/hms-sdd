@@ -44,7 +44,7 @@ const roomTransactionLogsService = new RoomTransactionLogsService()
 const creditService = new CreditService()
 
 const moment = require('../../../public/scripts/moment.min.js')
-const { formatISODate } = require('../../../globals/date.js')
+const { formatISODate, formatDate, toInputDate } = require('../../../globals/date.js')
 class Dashboard {
   constructor() {
     autoBind(this)
@@ -643,6 +643,7 @@ class Dashboard {
       const resTransaction = await transactionService.getTransactionById(id)
       const resSales = await goodsSalesService.getGoodsSalesByBooking(resTransaction.bookingId)
       const hotel = await this._getHotelInfo()
+      const credits = await creditService.getCreditTransactionsBySettledId(id)
 
       let salesTotal = 0
       if (resSales.length) {
@@ -661,6 +662,7 @@ class Dashboard {
         role,
         transaction: resTransaction,
         sales,
+        credits,
         addSeparator,
         calculateNights,
         accName,
@@ -691,6 +693,9 @@ class Dashboard {
         total: salesTotal,
         data: resSales
       }
+      const nightQty = calculateNights(resTransaction.startDate, resTransaction.endDate)
+      resTransaction.roomPrice = resTransaction.totalRoom / nightQty
+
       res.render('invoice.ejs', {
         layout: 'partials/auth-layout',
         title: 'Bill Hotel',
@@ -705,6 +710,58 @@ class Dashboard {
         capitalized
       })
     } catch (error) {
+      res.redirect('/transaction')
+    }
+  }
+
+  async invoiceMeetingRoom(req, res) {
+    const { role, name: accName } = req.session.user
+
+    const { id } = req.params
+
+    try {
+      const resTransaction = await transactionService.getTransactionById(id)
+      const resSales = await goodsSalesService.getGoodsSalesByBooking(resTransaction.bookingId)
+      const hotel = await this._getHotelInfo()
+
+      let salesTotal = 0
+      if (resSales.length) {
+        salesTotal = resSales.reduce((a, b) => {
+          return a + b.price * b.quantity
+        }, 0)
+      }
+      const sales = {
+        total: salesTotal,
+        data: resSales
+      }
+
+      const nightQty = calculateNights(resTransaction.startDate, resTransaction.endDate)
+      resTransaction.roomPrice = resTransaction.totalRoom / nightQty
+
+      const adjustDate = (date) => {
+        const day = date.getDate()
+        date.setDate(day - 1)
+        return new Date(date)
+      }
+
+      const endDate = adjustDate(new Date(resTransaction.endDate))
+
+      res.render('invoice-mr.ejs', {
+        layout: 'partials/auth-layout',
+        title: 'Bill Hotel',
+        role,
+        transaction: resTransaction,
+        sales,
+        addSeparator,
+        calculateNights,
+        moment,
+        accName,
+        hotel,
+        capitalized,
+        endDate
+      })
+    } catch (error) {
+      console.log(error)
       res.redirect('/transaction')
     }
   }
@@ -730,6 +787,8 @@ class Dashboard {
         total: salesTotal,
         data: resSales
       }
+      const nightQty = calculateNights(resTransaction.startDate, resTransaction.endDate)
+      resTransaction.roomPrice = resTransaction.totalRoom / nightQty
       res.render('invoice-historic.ejs', {
         layout: 'partials/auth-layout',
         title: 'Bill Hotel Historis',
@@ -763,10 +822,15 @@ class Dashboard {
           return a + b.grandTotal
         }, 0)
       }
+      const creditGrandTotal = reports.reduce((a, b) => {
+        return a + b.totalCredit
+      }, 0)
+
       res.render('transaction-report.ejs', {
         title: 'Laporan Transaksi',
         role,
         reports,
+        creditGrandTotal,
         addSeparator,
         total,
         query: req.query,
@@ -1289,6 +1353,29 @@ class Dashboard {
     }
   }
 
+  async creditPopupEdit(req, res) {
+    const { creditId } = req.params
+    try {
+      const { role, name: accName } = req.session.user
+      const hotel = await this._getHotelInfo()
+
+      const credit = await creditService.getCreditById(creditId)
+      const due = toInputDate(new Date(credit.due))
+
+      res.render('credit-popup-edit.ejs', {
+        layout: 'partials/auth-layout',
+        title: 'Perbaharui Detail Tagihan',
+        role,
+        accName,
+        hotel,
+        credit,
+        due
+      })
+    } catch (error) {
+      res.redirect('/')
+    }
+  }
+
   async creditList(req, res) {
     const { search, limit, start, end } = req.query
 
@@ -1296,7 +1383,6 @@ class Dashboard {
       const { role, name: accName } = req.session.user
       const hotel = await this._getHotelInfo()
       const credits = await creditService.getCredits(search, limit, start, end)
-      console.log(credits)
 
       res.render('credits-list.ejs', {
         title: 'Daftar Kredit',
@@ -1313,9 +1399,85 @@ class Dashboard {
     }
   }
 
+  async creditDetail(req, res) {
+    const { creditId } = req.params
+    try {
+      const { role, name: accName } = req.session.user
+      const hotel = await this._getHotelInfo()
+      const credit = await creditService.getCreditById(creditId)
+
+      const totalAmount = credit.transactions.reduce((a, b) => {
+        return a + b.amount
+      }, 0)
+
+      res.render('credit-detail.ejs', {
+        title: 'Detail Kredit',
+        role,
+        accName,
+        hotel,
+        credit,
+        formatISODate,
+        addSeparator,
+        totalAmount
+      })
+    } catch (error) {
+      console.log(error)
+      res.redirect('/')
+    }
+  }
+
+  async creditDetailPrint(req, res) {
+    const { creditId } = req.params
+    const { rows } = req.query
+    let rowsArr = []
+    try {
+      if (rows) {
+        rowsArr = this._parseRows(rows)
+      }
+      const { role, name: accName } = req.session.user
+      const hotel = await this._getHotelInfo()
+      const credit = await creditService.getCreditById(creditId)
+
+      let transactions = credit.transactions
+
+      if (rows) {
+        transactions = transactions.filter((trx) => rowsArr.includes(trx.settledId))
+      }
+
+      const totalAmount = transactions.reduce((a, b) => {
+        return a + b.amount
+      }, 0)
+      const totalPaid = transactions.reduce((a, b) => {
+        return a + b.paid
+      }, 0)
+
+      res.render('credit-detail-print.ejs', {
+        title: 'Cetak Detail Kredit',
+        layout: 'partials/print-layout',
+        role,
+        accName,
+        hotel,
+        credit,
+        formatISODate,
+        formatDate,
+        addSeparator,
+        totalAmount,
+        transactions,
+        totalPaid
+      })
+    } catch (error) {
+      console.log(error)
+      res.redirect('/')
+    }
+  }
+
   async _getHotelInfo() {
     const hotel = await hotelInfoService.getHotelInfo()
     return hotel
+  }
+
+  _parseRows(rows) {
+    return String(rows).split('_')
   }
 }
 

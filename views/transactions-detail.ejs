@@ -1,5 +1,5 @@
 <section class="dark:bg-gray-900 flex flex-col gap-4">
-  <h2 class="text-lg dark:text-white">Detail Transaksi</h2>
+  <h1 class="text-lg dark:text-white">Detail Transaksi</h1>
   <div class="content_container !p-0 !border-0">
     <div class="flex justify-between items-center indigo-pink rounded-lg">
       <h3 class="text-lg sm:text-2xl text-center w-full py-10 text-white font-extrabold">
@@ -22,196 +22,249 @@
     </div>
   </div>
   <div class="content_container flex flex-col lg:flex-row gap-4">
-    <form id="form-checkin" class="main_form flex-[2]">
-      <div class="grid gap-4 lg:grid-cols-4 lg:gap-6">
-        <div class="lg:col-span-2 relative">
-          <label for="room-inv">Invoice</label>
-          <input type="text" required="" value="<%= transaction.id %>" disabled class="input-disable" />
+    <div class="flex-[2]">
+      <form id="form-checkin" class="main_form">
+        <div class="grid gap-4 lg:grid-cols-4 lg:gap-6">
+          <div class="lg:col-span-2 relative">
+            <label for="room-inv">Invoice</label>
+            <input type="text" required="" value="<%= transaction.id %>" disabled class="input-disable" />
+          </div>
+          <div class="lg:col-span-2 relative">
+            <label for="room-list">Nomor Kamar</label>
+            <input type="text" value="<%= transaction.number %>" disabled class="input-disable" />
+          </div>
+          <div class="lg:col-span-2">
+            <label for="room-booker">Pemesan</label>
+            <input type="text" value="<%= transaction.bookedBy %>" disabled class="input-disable" />
+          </div>
+          <div class="lg:col-span-2 relative">
+            <label for="room-guest">Tamu</label>
+            <input type="text" class="input-disable" disabled value="<%= transaction.name %>" />
+          </div>
+          <div class="lg:col-span-4">
+            <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-700" />
+          </div>
+          <!-- TOTAL -->
+          <div class="lg:col-span-4 flex items-center flex-col lg:flex-row gap-2">
+            <label for="room-total" class="flex-[1]">Pembayaran (Kamar + Ekstra)</label>
+            <input
+              type="text"
+              class="flex-[2] !bg-gray-50 !border-blue-600 !text-blue-600 dark:!text-white dark:!bg-gray-700"
+              value="<%= addSeparator(transaction.totalRoom
+               + transaction.totalExtra) %>"
+              disabled />
+          </div>
+          <div class="lg:col-span-4 flex items-center flex-col lg:flex-row gap-2">
+            <label for="room-fines" class="flex-[1]">Denda</label>
+            <input
+              type="text"
+              id="room-fines"
+              required=""
+              class="flex-[2] !bg-gray-50 !border-blue-600 !text-blue-600 dark:!text-white dark:!bg-gray-700"
+              value="<%= addSeparator(transaction.totalFines) %>"
+              disabled />
+          </div>
+          <div class="lg:col-span-4">
+            <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-700" />
+          </div>
+          <div class="lg:col-span-4 flex items-center flex-col lg:flex-row gap-2">
+            <label for="room-sales" class="flex-[1]">Pembelian Tambahan</label>
+            <input
+              type="text"
+              class="flex-[2] !bg-gray-50 !border-fuchsia-600 !text-fuchsia-600 dark:!text-white dark:!bg-gray-700"
+              value="<%= addSeparator(transaction.totalSales) %>"
+              disabled />
+          </div>
+          <div class="lg:col-span-4">
+            <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-700" />
+          </div>
+          <div class="lg:col-span-4 flex items-center flex-col lg:flex-row gap-2">
+            <label for="room-discount" class="flex-[1]">Potongan Harga</label>
+            <input
+              type="text"
+              id="room-discount"
+              class="flex-[2] !bg-gray-50 !border-red-600 !text-red-600 dark:!text-white dark:!bg-gray-700"
+              value="<%= addSeparator(transaction.discount) %>"
+              disabled />
+          </div>
+          <div class="lg:col-span-4 flex items-center flex-col lg:flex-row gap-2">
+            <label for="room-co-total" class="flex-[1]">Total</label>
+            <input
+              type="text"
+              id="room-co-total"
+              required=""
+              class="flex-[2] !bg-gray-50 !border-green-600 !text-green-600 dark:!text-white dark:!bg-gray-700"
+              value="<%= addSeparator(transaction.totalRoom
+              + transaction.totalExtra + transaction.totalFines + transaction.totalSales - transaction.discount) %>"
+              disabled />
+          </div>
+          <div class="lg:col-span-4">
+            <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-700" />
+          </div>
         </div>
-        <div class="lg:col-span-2 relative">
-          <label for="room-list">Nomor Kamar</label>
-          <input type="text" value="<%= transaction.number %>" disabled class="input-disable" />
-        </div>
-        <div class="lg:col-span-2">
-          <label for="room-booker">Pemesan</label>
-          <input type="text" value="<%= transaction.bookedBy %>" disabled class="input-disable" />
-        </div>
-        <div class="lg:col-span-2 relative">
-          <label for="room-guest">Tamu</label>
-          <input type="text" class="input-disable" disabled value="<%= transaction.name %>" />
-        </div>
-        <div class="lg:col-span-4">
-          <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-700" />
-        </div>
-        <!-- TOTAL -->
-        <div class="lg:col-span-4 flex items-center flex-col lg:flex-row gap-2">
-          <label for="room-total" class="flex-[1]">Pembayaran (Kamar + Ekstra)</label>
-          <input
-            type="text"
-            class="flex-[2] !bg-gray-50 !border-blue-600 !text-blue-600 dark:!text-white dark:!bg-gray-700"
-            value="<%= addSeparator(transaction.totalRoom
-             + transaction.totalExtra) %>"
-            disabled />
-        </div>
-        <div class="lg:col-span-4 flex items-center flex-col lg:flex-row gap-2">
-          <label for="room-fines" class="flex-[1]">Denda</label>
-          <input
-            type="text"
-            id="room-fines"
-            required=""
-            class="flex-[2] !bg-gray-50 !border-blue-600 !text-blue-600 dark:!text-white dark:!bg-gray-700"
-            value="<%= addSeparator(transaction.totalFines) %>"
-            disabled />
-        </div>
-        <div class="lg:col-span-4">
-          <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-700" />
-        </div>
-        <div class="lg:col-span-4 flex items-center flex-col lg:flex-row gap-2">
-          <label for="room-sales" class="flex-[1]">Pembelian Tambahan</label>
-          <input
-            type="text"
-            class="flex-[2] !bg-gray-50 !border-fuchsia-600 !text-fuchsia-600 dark:!text-white dark:!bg-gray-700"
-            value="<%= addSeparator(transaction.totalSales) %>"
-            disabled />
-        </div>
-        <div class="lg:col-span-4">
-          <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-700" />
-        </div>
-        <div class="lg:col-span-4 flex items-center flex-col lg:flex-row gap-2">
-          <label for="room-discount" class="flex-[1]">Potongan Harga</label>
-          <input
-            type="text"
-            id="room-discount"
-            class="flex-[2] !bg-gray-50 !border-red-600 !text-red-600 dark:!text-white dark:!bg-gray-700"
-            value="<%= addSeparator(transaction.discount) %>"
-            disabled />
-        </div>
-        <div class="lg:col-span-4 flex items-center flex-col lg:flex-row gap-2">
-          <label for="room-co-total" class="flex-[1]">Total</label>
-          <input
-            type="text"
-            id="room-co-total"
-            required=""
-            class="flex-[2] !bg-gray-50 !border-green-600 !text-green-600 dark:!text-white dark:!bg-gray-700"
-            value="<%= addSeparator(transaction.totalRoom
-            + transaction.totalExtra + transaction.totalFines + transaction.totalSales - transaction.discount) %>"
-            disabled />
-        </div>
-        <div class="lg:col-span-4">
-          <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-700" />
-        </div>
-      </div>
-      <a
-        class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600"
-        href="/transaction/<%= transaction.id %>/print/historic"
-        target="_blank"
-        >Cetak</a
-      >
-      <a
-        class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-orange-600 text-white hover:bg-orange-700 disabled:opacity-50 disabled:pointer-events-none dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600 cursor-pointer"
-        onclick="nonHistoricInvoice()"
-        >Cetak Non-Historis</a
-      >
-      <a
-        href="/transaction"
-        class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-red-600 text-white hover:bg-red-700 disabled:opacity-50 disabled:pointer-events-none dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600 cursor-pointer">
-        Kembali
-      </a>
-    </form>
-    <div class="flex-1 flex flex-col gap-4">
-      <div
-        id="form-info-acc"
-        class="bg-gray-50 text-gray-500 p-4 border border-gray-300 rounded-lg dark:bg-gray-800 dark:border-gray-500 dark:text-gray-200">
-        <h2 class="mb-3">Keterangan pemesanan :</h2>
-        <table class="w-full text-sm">
-          <tr class="border-b border-gray-300 h-2">
-            <td class="py-2 w-40">Jumlah Malam</td>
-            <td class="py-2 px-4">:</td>
-            <td class="py-2"><%= calculateNights(transaction.startDate, transaction.endDate) %></td>
-          </tr>
-          <tr class="border-b border-gray-300 h-2">
-            <td class="py-2 w-40">Kategori Kamar</td>
-            <td class="py-2 px-4">:</td>
-            <td class="py-2"><%= transaction.category %></td>
-          </tr>
-          <tr class="border-b border-gray-300 h-2">
-            <td class="py-2 w-40">Tipe Kamar</td>
-            <td class="py-2 px-4">:</td>
-            <td class="py-2"><%= transaction.smoking ? 'Smoking' : 'Non-Smoking' %></td>
-          </tr>
-          <tr class="border-b border-gray-300 h-2">
-            <td class="py-2 w-40">Asal Pemesanan</td>
-            <td class="py-2 px-4">:</td>
-            <td class="py-2"><%= transaction.source %></td>
-          </tr>
-          <tr class="h-2">
-            <td class="py-2">Tipe Bed</td>
-            <td class="py-2 px-4">:</td>
-            <td class="py-2"><%= transaction.bed %></td>
-          </tr>
-          <tr class="h-2">
-            <td class="py-2">Diselesaikan Oleh</td>
-            <td class="py-2 px-4">:</td>
-            <td class="py-2"><%= transaction.adminName %></td>
-          </tr>
-        </table>
-      </div>
-      <div>
+        <a
+          class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600"
+          href="/transaction/<%= transaction.id %>/print/historic"
+          target="_blank"
+          >Cetak</a
+        >
+        <a
+          class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-orange-600 text-white hover:bg-orange-700 disabled:opacity-50 disabled:pointer-events-none dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600 cursor-pointer"
+          onclick="nonHistoricInvoice()"
+          >Cetak Non-Historis</a
+        >
+        <a
+          class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-cyan-600 text-white hover:bg-cyan-700 disabled:opacity-50 disabled:pointer-events-none dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600"
+          href="/transaction/<%= transaction.id %>/print/mr"
+          target="_blank"
+          >Cetak Meeting Room</a
+        >
+        <a
+          href="/transaction"
+          class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-red-600 text-white hover:bg-red-700 disabled:opacity-50 disabled:pointer-events-none dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600 cursor-pointer">
+          Kembali
+        </a>
+      </form>
+    </div>
+    <div class="flex-1 space-y-4 max-w-96">
+      <div class="flex flex-col gap-4">
         <div
-          id="acc-sales"
-          data-accordion="collapse"
-          data-active-classes="bg-blue-100 dark:bg-gray-800 text-blue-600 dark:text-white">
-          <h2 id="acc-sales-heading">
-            <button
-              type="button"
-              class="bg-blue-50 dark:bg-gray-900 flex items-center justify-between w-full p-4 rtl:text-right text-gray-500 border border-gray-200 rounded-t-xl dark:border-gray-700 dark:text-gray-400 hover:bg-blue-100 dark:hover:bg-gray-800 gap-3"
-              data-accordion-target="#acc-sales-body"
-              aria-expanded="false"
-              aria-controls="acc-sales-body">
-              <span>Daftar Pembelian Tambahan</span>
-              <svg
-                data-accordion-icon
-                class="w-3 h-3 rotate-180 shrink-0"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 10 6">
-                <path
-                  stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9 5 5 1 1 5" />
-              </svg>
-            </button>
-          </h2>
-          <div id="acc-sales-body" class="hidden" aria-labelledby="acc-sales-heading">
-            <div class="table_container rounded-b-lg border-t-0">
-              <table id="table-goods" class="table_fb">
-                <thead class="table_fb__head">
-                  <tr>
-                    <th scope="col">Nama Barang</th>
-                    <th scope="col">Qty</th>
-                  </tr>
-                </thead>
-                <tbody class="table_fb__body">
-                  <% if (sales.data.length) { %> <% sales.data.forEach(sale => { %>
-                  <tr>
-                    <td class="px-2 py-4"><%= sale.name %></td>
-                    <td class="px-2 py-4"><%= sale.quantity %></td>
-                  </tr>
-                  <% }) %> <% } else { %>
-                  <tr>
-                    <td class="px-6 py-4" colspan="5">Tidak ada barang yang dibeli</td>
-                  </tr>
+          id="form-info-acc"
+          class="bg-gray-50 text-gray-500 p-4 border border-gray-300 rounded-lg dark:bg-gray-800 dark:border-gray-500 dark:text-gray-200">
+          <h2 class="mb-3">Keterangan pemesanan :</h2>
+          <table class="w-full text-sm">
+            <tr class="border-b border-gray-300 h-2">
+              <td class="py-2 w-40">Jumlah Malam</td>
+              <td class="py-2 px-4">:</td>
+              <td class="py-2"><%= calculateNights(transaction.startDate, transaction.endDate) %></td>
+            </tr>
+            <tr class="border-b border-gray-300 h-2">
+              <td class="py-2 w-40">Kategori Kamar</td>
+              <td class="py-2 px-4">:</td>
+              <td class="py-2"><%= transaction.category %></td>
+            </tr>
+            <tr class="border-b border-gray-300 h-2">
+              <td class="py-2 w-40">Tipe Kamar</td>
+              <td class="py-2 px-4">:</td>
+              <td class="py-2"><%= transaction.smoking ? 'Smoking' : 'Non-Smoking' %></td>
+            </tr>
+            <tr class="border-b border-gray-300 h-2">
+              <td class="py-2 w-40">Asal Pemesanan</td>
+              <td class="py-2 px-4">:</td>
+              <td class="py-2"><%= transaction.source %></td>
+            </tr>
+            <tr class="h-2">
+              <td class="py-2">Tipe Bed</td>
+              <td class="py-2 px-4">:</td>
+              <td class="py-2"><%= transaction.bed %></td>
+            </tr>
+            <tr class="h-2">
+              <td class="py-2">Diselesaikan Oleh</td>
+              <td class="py-2 px-4">:</td>
+              <td class="py-2"><%= transaction.adminName %></td>
+            </tr>
+          </table>
+        </div>
+        <div>
+          <div
+            id="acc-sales"
+            data-accordion="collapse"
+            data-active-classes="bg-blue-100 dark:bg-gray-800 text-blue-600 dark:text-white">
+            <h2 id="acc-sales-heading">
+              <button
+                type="button"
+                class="bg-blue-50 dark:bg-gray-900 flex items-center justify-between w-full p-4 rtl:text-right text-gray-500 border border-gray-200 rounded-t-xl dark:border-gray-700 dark:text-gray-400 hover:bg-blue-100 dark:hover:bg-gray-800 gap-3"
+                data-accordion-target="#acc-sales-body"
+                aria-expanded="false"
+                aria-controls="acc-sales-body">
+                <span>Daftar Pembelian Tambahan</span>
+                <svg
+                  data-accordion-icon
+                  class="w-3 h-3 rotate-180 shrink-0"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 10 6">
+                  <path
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 5 5 1 1 5" />
+                </svg>
+              </button>
+            </h2>
+            <div id="acc-sales-body" class="hidden" aria-labelledby="acc-sales-heading">
+              <div class="table_container rounded-b-lg border-t-0">
+                <table id="table-goods" class="table_fb">
+                  <thead class="table_fb__head">
+                    <tr>
+                      <th scope="col">Nama Barang</th>
+                      <th scope="col">Qty</th>
+                    </tr>
+                  </thead>
+                  <tbody class="table_fb__body">
+                    <% if (sales.data.length) { %> <% sales.data.forEach(sale => { %>
+                    <tr>
+                      <td class="px-2 py-4"><%= sale.name %></td>
+                      <td class="px-2 py-4"><%= sale.quantity %></td>
+                    </tr>
+                    <% }) %> <% } else { %>
+                    <tr>
+                      <td class="px-6 py-4" colspan="5">Tidak ada barang yang dibeli</td>
+                    </tr>
 
-                  <% } %>
-                </tbody>
-              </table>
+                    <% } %>
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
       </div>
+      <% if (credits.length > 0) { %>
+      <div
+        id="credits-info"
+        data-accordion="collapse"
+        data-active-classes="bg-blue-100 dark:bg-gray-800 text-blue-600 dark:text-white">
+        <h2 id="credits-info-heading">
+          <button
+            type="button"
+            class="bg-blue-50 dark:bg-gray-900 flex items-center justify-between w-full p-4 rtl:text-right text-gray-500 border border-gray-200 rounded-t-xl dark:border-gray-700 dark:text-gray-400 hover:bg-blue-100 dark:hover:bg-gray-800 gap-3"
+            data-accordion-target="#credits-info-body"
+            aria-expanded="false"
+            aria-controls="credits-info-body">
+            <span>Terdaftar Dalam Tagihan</span>
+            <svg
+              data-accordion-icon
+              class="w-3 h-3 rotate-180 shrink-0"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 10 6">
+              <path
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 5 5 1 1 5" />
+            </svg>
+          </button>
+        </h2>
+        <div id="credits-info-body" class="hidden" aria-labelledby="credits-info-heading">
+          <ul class="bg-gray-50">
+            <% credits.forEach(credit => { %>
+            <li class="hover:bg-gray-100 p-4 w-full border-b border-gray-200 truncate">
+              <a title="<%= credit.name %>" class="text-sm" href="/credits/detail/<%= credit.id %>"
+                ><%= credit.id %> - <%= credit.name %></a
+              >
+            </li>
+            <% }) %>
+          </ul>
+        </div>
+      </div>
+
+      <% } %>
     </div>
   </div>
 </section>
