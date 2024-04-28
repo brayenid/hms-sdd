@@ -110,7 +110,12 @@ class CreditService {
       const query = {
         text: `
             SELECT 
-                c.id, g.name, c.creditor AS "creditorId", c.detail, c.due, c.created_at AS "createdAt"
+                c.id, 
+                g.name, 
+                c.creditor AS "creditorId", 
+                c.detail, 
+                c.due, 
+                c.created_at AS "createdAt"
             FROM
                 credits c
             JOIN

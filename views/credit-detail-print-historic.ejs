@@ -1,7 +1,6 @@
 <div class="bg-white max-w-screen-lg mx-auto">
-  <% if (notes.length) { %>
   <div
-    class="flex p-4 mb-4 text-sm text-yellow-800 rounded-lg bg-yellow-50 dark:bg-gray-800 dark:text-yellow-400 no-print"
+    class="flex p-4 mb-4 text-sm text-blue-800 rounded-lg bg-blue-50 dark:bg-gray-800 dark:text-blue-400 no-print"
     role="alert">
     <svg
       class="flex-shrink-0 inline w-4 h-4 me-3 mt-[2px]"
@@ -14,22 +13,10 @@
     </svg>
     <span class="sr-only">Info</span>
     <div>
-      <span class="font-medium">Catatan:</span>
-      <ul class="mt-1.5 list-disc list-inside">
-        <% notes.forEach(note => { %>
-        <li><span class="font-semibold"><%= note.in %></span> - <%= note.case %></li>
-        <% }) %>
-      </ul>
-      <p class="font-bold mt-2">
-        <% if (rows) { %>
-        <a href="/credits/detail/<%= credit.id %>/print/historis?rows=<%= rows %>">Masuk mode historis?</a>
-        <% } else { %>
-        <a href="/credits/detail/<%= credit.id %>/print/historis">Masuk mode historis?</a>
-        <% } %>
-      </p>
+      Anda masuk dalam pencetakan historis, dimana detail pembelian POS tidak dapat ditampilkan untuk harga yang sesuai.
+      <span class="font-semibold"> <a href="/credits/detail/<%= credit.id %>/print">Masuk mode detail?</a></span>
     </div>
   </div>
-  <% } %>
   <header class="flex justify-between">
     <div class="max-w-96">
       <h2 class="text-lg dark:text-white font-bold uppercase mb-2">Tagihan</h2>
@@ -150,17 +137,16 @@
           <td class="p-1 border-b dark:border-gray-600 w-32"></td>
           <td class="p-1 border-b dark:border-gray-600 w-32 font-bold" colspan="7">Item Pembelian</td>
         </tr>
-        <% trx.posInfo.forEach(pos => { %>
         <tr>
           <td class="p-1 border-b dark:border-gray-600 w-32"></td>
-          <td class="p-1 border-b dark:border-gray-600 w-32" contenteditable><%= pos.name %></td>
-          <td class="p-1 border-b dark:border-gray-600"><%= pos.quantity %></td>
+          <td class="p-1 border-b dark:border-gray-600 w-32">Total POS</td>
+          <td class="p-1 border-b dark:border-gray-600">1</td>
           <td class="p-1 border-b dark:border-gray-600"></td>
           <td class="p-1 border-b dark:border-gray-600 w-32" colspan="4" contenteditable>
-            <%= addSeparator(pos.total/pos.quantity) %>
+            <%= addSeparator(trx.bookingDetail.totalSales) %>
           </td>
         </tr>
-        <% }) %> <% } %> <% }) %> <% } else { %>
+        <% } %> <% }) %> <% } else { %>
         <tr>
           <td class="p-1 border-b dark:border-gray-600 w-48 text-center" colspan="6">Tidak ada data</td>
         </tr>

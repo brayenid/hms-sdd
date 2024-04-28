@@ -582,16 +582,11 @@
 
   /**
    * Make a right total price towards discount
-   * bcs total price will be counted differently
-   * when it's positive or negative
    */
   const getTotalComplete = () => {
     const all = finesTotal + salesTotal + (totalPrice - paid)
-    if (all >= 0) {
-      return all - totalDiscount
-    } else {
-      return all
-    }
+
+    return all - totalDiscount
   }
 
   // CLOSE ROOM LIST OUTSIDE CLICK

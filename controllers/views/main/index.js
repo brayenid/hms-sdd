@@ -1430,6 +1430,8 @@ class Dashboard {
     const { creditId } = req.params
     const { rows } = req.query
     let rowsArr = []
+    const notes = []
+
     try {
       if (rows) {
         rowsArr = this._parseRows(rows)
@@ -1443,6 +1445,36 @@ class Dashboard {
       if (rows) {
         transactions = transactions.filter((trx) => rowsArr.includes(trx.settledId))
       }
+
+      const transactionsMapped = await Promise.all(
+        transactions.map(async (trx) => {
+          const resTransaction = await transactionService.getTransactionById(trx.settledTransaction)
+          const resSales = await goodsSalesService.getGoodsSalesByBooking(resTransaction.bookingId)
+
+          const resLivePriceTotal = resSales.reduce((accum, curr) => {
+            return accum + curr.total
+          }, 0)
+          if (resLivePriceTotal !== resTransaction.totalSales) {
+            notes.push({
+              in: resTransaction.id,
+              case: `Nilai POS tidak sesuai karena mungkin ada perubahan data harga: Seharusnya total POS bernilai ${addSeparator(
+                resTransaction.totalSales
+              )} namun didapatkan ${addSeparator(resLivePriceTotal)}`
+            })
+          }
+
+          const nightQty = calculateNights(resTransaction.startDate, resTransaction.endDate)
+
+          return {
+            ...trx,
+            bookingDetail: {
+              ...resTransaction,
+              nightQty
+            },
+            posInfo: resSales
+          }
+        })
+      )
 
       const totalAmount = transactions.reduce((a, b) => {
         return a + b.amount
@@ -1462,8 +1494,76 @@ class Dashboard {
         formatDate,
         addSeparator,
         totalAmount,
-        transactions,
-        totalPaid
+        transactions: transactionsMapped,
+        totalPaid,
+        moment,
+        notes,
+        rows
+      })
+    } catch (error) {
+      console.log(error)
+      res.redirect('/')
+    }
+  }
+
+  async creditDetailPrintHistoric(req, res) {
+    const { creditId } = req.params
+    const { rows } = req.query
+    let rowsArr = []
+
+    try {
+      if (rows) {
+        rowsArr = this._parseRows(rows)
+      }
+      const { role, name: accName } = req.session.user
+      const hotel = await this._getHotelInfo()
+      const credit = await creditService.getCreditById(creditId)
+
+      let transactions = credit.transactions
+
+      if (rows) {
+        transactions = transactions.filter((trx) => rowsArr.includes(trx.settledId))
+      }
+
+      const transactionsMapped = await Promise.all(
+        transactions.map(async (trx) => {
+          const resTransaction = await transactionService.getTransactionById(trx.settledTransaction)
+          const resSales = await goodsSalesService.getGoodsSalesByBooking(resTransaction.bookingId)
+
+          const nightQty = calculateNights(resTransaction.startDate, resTransaction.endDate)
+
+          return {
+            ...trx,
+            bookingDetail: {
+              ...resTransaction,
+              nightQty
+            },
+            posInfo: resSales
+          }
+        })
+      )
+
+      const totalAmount = transactions.reduce((a, b) => {
+        return a + b.amount
+      }, 0)
+      const totalPaid = transactions.reduce((a, b) => {
+        return a + b.paid
+      }, 0)
+
+      res.render('credit-detail-print-historic.ejs', {
+        title: 'Cetak Detail Kredit',
+        layout: 'partials/print-layout',
+        role,
+        accName,
+        hotel,
+        credit,
+        formatISODate,
+        formatDate,
+        addSeparator,
+        totalAmount,
+        transactions: transactionsMapped,
+        totalPaid,
+        moment
       })
     } catch (error) {
       console.log(error)

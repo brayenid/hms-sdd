@@ -581,6 +581,8 @@ class BookingService {
           rooms
         ON 
           bookings.room = rooms.id
+        WHERE 
+          CAST(bookings.start_date AS DATE) BETWEEN CURRENT_DATE AND CURRENT_DATE + INTERVAL '9 day'
         ORDER BY 
           bookings.start_date DESC
         LIMIT $1

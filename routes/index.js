@@ -290,5 +290,10 @@ router.get('/credits', authMiddlewareFDView.validate, dashboard.creditList)
 router.get('/credits/detail/:creditId', authMiddlewareFDView.validate, dashboard.creditDetail)
 router.get('/credits/detail/:creditId/edit', authMiddlewareFDView.validate, dashboard.creditPopupEdit)
 router.get('/credits/detail/:creditId/print', authMiddlewareFDView.validate, dashboard.creditDetailPrint)
+router.get(
+  '/credits/detail/:creditId/print/historis',
+  authMiddlewareFDView.validate,
+  dashboard.creditDetailPrintHistoric
+)
 
 module.exports = router
