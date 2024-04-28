@@ -1,6 +1,6 @@
 node_modules
 backup
 .env
-.env.production
+# .env.production
 # win-service.js
 # win-service-un.js
