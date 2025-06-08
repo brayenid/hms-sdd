@@ -44,6 +44,10 @@
             <% }%> <% }) %>
           </select>
         </div>
+        <div class="sm:col-span-1">
+          <label for="guest-phone">No. Telepon</label>
+          <input type="tel" id="guest-phone" placeholder="Masukan nomor telepon" required="" />
+        </div>
       </div>
       <button type="submit">Tambah</button>
     </form>
@@ -61,16 +65,19 @@
     const address = document.querySelector('#guest-address').value
     const city = document.querySelector('#guest-city').value
     const nationality = document.querySelector('#guest-nationality').value
+    const phone = document.querySelector('#guest-phone').value
 
-    const payload = { idType, idNumber, name, gender, address, city, nationality }
+    const payload = { idType, idNumber, name, gender, address, city, nationality, phone }
 
     const { isConfirmed } = await Swal.fire({
-      title: 'Yakin menambahkan tamu baru?',
+      title: 'Tambah Tamu',
+      text: 'Yakin menambahkan tamu baru?',
       icon: 'question',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'Tambahkan'
+      confirmButtonText: 'Tambahkan',
+      cancelButtonText: 'Batal'
     })
 
     if (isConfirmed) {

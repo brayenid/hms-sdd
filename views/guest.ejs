@@ -45,6 +45,10 @@
               <% }%> <% }) %>
             </select>
           </div>
+          <div class="sm:col-span-1">
+            <label for="guest-phone">No. Telepon</label>
+            <input type="text" id="guest-phone" placeholder="Masukan no telepon tamu" required="" />
+          </div>
         </div>
         <button type="submit">Tambah</button>
       </form>
@@ -91,7 +95,7 @@
       tableBody.innerHTML = ''
       guests.forEach((data) => {
         const element = `
-          <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+          <tr class="bg-white !text-left border-b dark:bg-gray-800 dark:border-gray-700">
             <td class="px-6 py-4">${data.name}</td>
             <td class="px-6 py-4">${data.city}</td>
             <td class="px-6 py-4"><a class="text-blue-600 hover:underline" href="/guest/${data.id}">Edit</a></td>
@@ -119,11 +123,13 @@
       const address = document.querySelector('#guest-address').value
       const city = document.querySelector('#guest-city').value
       const nationality = document.querySelector('#guest-nationality').value
+      const phone = document.querySelector('#guest-phone').value
 
-      const payload = { idType, idNumber, name, gender, address, city, nationality }
+      const payload = { idType, idNumber, name, gender, address, city, nationality, phone }
 
       const { isConfirmed } = await Swal.fire({
-        title: 'Yakin menambahkan tamu baru?',
+        title: 'Menambah Tamu',
+        text: 'Yakin menambahkan tamu baru?',
         icon: 'question',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',

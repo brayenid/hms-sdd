@@ -176,13 +176,25 @@
       </tbody>
     </table>
 
-    <div class="flex justify-end mt-4 text-xs">
+    <div class="flex justify-around mt-4 text-xs">
       <div class="max-w-80 text-center">
-        <div class="mb-14">
+        <div>
+          <p contenteditable><br />Kreditur</p>
+        </div>
+        <div class="mt-12">
+          <p contenteditable class="font-semibold"><%= credit.guest %></p>
+        </div>
+      </div>
+      <div class="max-w-80 text-center">
+        <div>
           <p contenteditable>Barong Tongkok, <%= formatDate(new Date()) %></p>
         </div>
         <div>
           <p contenteditable>Hotel Sidodadi</p>
+        </div>
+        <div class="mt-12">
+          <p contenteditable class="font-semibold"><%= accName %></p>
+          <p contenteditable><%= role %></p>
         </div>
       </div>
     </div>

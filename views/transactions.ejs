@@ -8,6 +8,7 @@
           <tr>
             <th scope="col">Inv</th>
             <th scope="col">Tamu</th>
+            <th scope="col">Telp.</th>
             <th scope="col">Pemesan</th>
             <th scope="col">Check In</th>
             <th scope="col">Check Out</th>
@@ -39,8 +40,9 @@
         const element = `
             <tr>
               <td>${data.id}</td>
-              <td class="text-left">${data.name}</td>
-              <td>${data.bookedBy}</td>
+              <td class="text-left max-w-44">${data.name}</td>
+              <td class="text-left">${data.phone}</td>
+              <td class="max-w-20">${data.bookedBy}</td>
               <td>${data.startDate.split('-').reverse().join('-')}</td>
               <td>${data.endDate.split('-').reverse().join('-')}</td>
               <td>${moment(data.createdAt).format('DD-MM-YYYY')}</td>

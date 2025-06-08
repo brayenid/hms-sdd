@@ -70,12 +70,14 @@
     }
 
     const { isConfirmed } = await Swal.fire({
-      title: 'Yakin mengubah info hotel?',
+      title: 'Ubah Info Hotel',
+      text: 'Yakin mengubah info hotel?',
       icon: 'question',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'Ubah'
+      confirmButtonText: 'Ubah',
+      cancelButtonText: 'Batal'
     })
 
     if (isConfirmed) {

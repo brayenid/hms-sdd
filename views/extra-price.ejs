@@ -101,12 +101,14 @@
       const breakfast = removeCurrency(formExtra.querySelector('#breakfast').value)
 
       const { isConfirmed } = await Swal.fire({
-        title: 'Yakin mengubah harga ekstra?',
+        title: 'Ubah Harga',
+        text: 'Yakin mengubah harga ekstra?',
         icon: 'question',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
-        confirmButtonText: 'Ubah'
+        confirmButtonText: 'Ubah',
+        cancelButtonText: 'Batal'
       })
 
       if (isConfirmed) {

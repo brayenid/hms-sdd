@@ -12,7 +12,7 @@ class GuestController {
 
   async addGuest(req, res) {
     const { id: adminId } = req.session.user
-    const { idType, idNumber, name, gender, address, city, nationality } = req.body
+    const { idType, idNumber, name, gender, address, city, nationality, phone } = req.body
     const payload = {
       idType,
       idNumber,
@@ -21,7 +21,8 @@ class GuestController {
       address,
       city,
       nationality,
-      admin: adminId
+      admin: adminId,
+      phone
     }
     try {
       await this.service.addGuest(payload)
@@ -41,7 +42,7 @@ class GuestController {
 
   async updateGuest(req, res) {
     const { guestId } = req.params
-    const { idType, idNumber, name, gender, address, city, nationality } = req.body
+    const { idType, idNumber, name, gender, address, city, nationality, phone } = req.body
     const { id: adminId } = req.session.user
 
     if (!guestId || !idType || !idNumber || !name || !gender || !address || !city || !nationality) {
@@ -62,7 +63,8 @@ class GuestController {
         address,
         city,
         nationality,
-        admin: adminId
+        admin: adminId,
+        phone
       })
 
       this.logService.addLog(`Perubahan data tamu : ${name}`, adminId)

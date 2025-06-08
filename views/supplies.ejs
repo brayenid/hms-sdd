@@ -118,12 +118,14 @@
   // DELETE STUFF
   const deleteSupply = async (id) => {
     const { isConfirmed } = await Swal.fire({
-      title: 'Yakin menghapus data barang ini?',
+      title: 'Hapus Barang',
+      text: 'Yakin menghapus data barang ini?',
       icon: 'question',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'Hapus'
+      confirmButtonText: 'Hapus',
+      cancelButtonText: 'Batal'
     })
 
     if (isConfirmed) {
@@ -199,12 +201,14 @@
       }
 
       const { isConfirmed } = await Swal.fire({
-        title: 'Yakin menambahkan barang masuk baru?',
+        title: 'Tambah Barang Masuk',
+        text: 'Yakin menambahkan barang masuk baru?',
         icon: 'question',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
-        confirmButtonText: 'Tambahkan'
+        confirmButtonText: 'Tambahkan',
+        cancelButtonText: 'Batal'
       })
 
       if (isConfirmed) {

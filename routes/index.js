@@ -129,6 +129,8 @@ router.get(
 )
 router.patch('/api/bookings/extends/room', authMiddlewareFD.validate, bookingController.extendRoom)
 router.patch('/api/bookings/payoff/:bookingId', authMiddlewareFD.validate, bookingController.payOffBook)
+router.patch('/api/bookings/checkin/undo/:bookId', authMiddlewareManager.validate, bookingController.undoCheckIn) // NEW
+router.patch('/api/bookings/checkout/undo/:bookId', authMiddlewareSudo.validateStrict, bookingController.undoCheckOut) // NEW
 
 // EXTRA PRICE
 router.put('/api/extraprice', authMiddlewareSudo.validateStrict, extraPriceController.putExtraPrice)
@@ -220,6 +222,7 @@ router.get('/checkin/:id', authMiddlewareFDView.validate, dashboard.checkInDetai
 router.get('/checkout', authMiddlewareFDView.validate, dashboard.checkOut)
 router.get('/checkout/:id', authMiddlewareFDView.validate, dashboard.checkOutDetail)
 router.get('/print/checkout/', authMiddlewareFDView.validate, dashboard.printActiveRoom)
+router.get('/total/checkout/', authMiddlewareFDView.validate, dashboard.activeRoomTotal)
 
 // EXTRA
 router.get('/extraprice', authMiddlewareSudoView.validateStrict, dashboard.extraPrice)

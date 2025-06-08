@@ -381,12 +381,28 @@ class Dashboard {
       const { role, name: accName } = req.session.user
       const hotel = await this._getHotelInfo()
 
+      function formatDate(date) {
+        const day = String(date.getDate()).padStart(2, '0')
+        const month = String(date.getMonth() + 1).padStart(2, '0')
+        const year = date.getFullYear()
+        return `${year}-${month}-${day}`
+      }
+
+      const today = new Date()
+      const tomorrow = new Date()
+      tomorrow.setDate(today.getDate() + 1)
+
+      const todayFormatted = formatDate(today)
+      const tomorrowFormatted = formatDate(tomorrow)
+
       res.render('check-out', {
         title: 'Daftar Check-Out Yang Akan Datang',
         query: req.query,
         role,
         accName,
-        hotel
+        hotel,
+        todayFormatted,
+        tomorrowFormatted
       })
     } catch (error) {
       res.redirect('/')
@@ -641,6 +657,7 @@ class Dashboard {
 
     try {
       const resTransaction = await transactionService.getTransactionById(id)
+
       const resSales = await goodsSalesService.getGoodsSalesByBooking(resTransaction.bookingId)
       const hotel = await this._getHotelInfo()
       const credits = await creditService.getCreditTransactionsBySettledId(id)
@@ -1063,6 +1080,32 @@ class Dashboard {
         accName,
         response,
         hotel
+      })
+    } catch (error) {
+      res.redirect('/checkout')
+    }
+  }
+
+  async activeRoomTotal(req, res) {
+    const { role, name: accName } = req.session.user
+    const { start, end, limit } = req.query
+
+    try {
+      const response = await bookingService.getBookInfoByCheckOutExt(limit, start, end, '')
+      const calculateRoomTotal = this._calculateActiveRoomTotals(response)
+
+      const hotel = await this._getHotelInfo()
+
+      res.render('active-room-total.ejs', {
+        title: 'Total Kamar Aktif',
+        layout: 'partials/print-layout.ejs',
+        role,
+        accName,
+        response,
+        hotel,
+        query: req.query,
+        calculateRoomTotal,
+        addSeparator
       })
     } catch (error) {
       res.redirect('/checkout')
@@ -1578,6 +1621,17 @@ class Dashboard {
 
   _parseRows(rows) {
     return String(rows).split('_')
+  }
+
+  _calculateActiveRoomTotals(data) {
+    return data.reduce(
+      (acc, item) => {
+        acc.roomTotal += item.totalRoom || 0
+        acc.extraTotal += item.totalExtra || 0
+        return acc
+      },
+      { roomTotal: 0, extraTotal: 0 }
+    )
   }
 }
 

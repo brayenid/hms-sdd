@@ -97,12 +97,14 @@
       }
 
       const { isConfirmed } = await Swal.fire({
-        title: 'Yakin mengubah kamar?',
+        title: 'Ubah Kamar',
+        text: 'Yakin mengubah kamar?',
         icon: 'question',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
-        confirmButtonText: 'Ubah'
+        confirmButtonText: 'Ubah',
+        cancelButtonText:'Batal'
       })
 
       if (isConfirmed) {
@@ -131,13 +133,14 @@
   // CLEANINESS STUFF
   const cleanRoom = async () => {
     const { isConfirmed } = await Swal.fire({
-      title: 'Yakin mengubah status kebersihan kamar?',
-      text : 'Pastikan kamar sudah bersih',
+      title: 'Status Kebersihan',
+      text : 'Yakin mengubah status kebersihan kamar? Pastikan kamar sudah bersih',
       icon: 'question',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'Ubah'
+      confirmButtonText: 'Ubah',
+      cancelButtonText:'Batal'
     })
 
     if(isConfirmed) {
@@ -165,12 +168,15 @@
   // DELETE STUFF
   const deleteRoom = async () => {
     const { isConfirmed } = await Swal.fire({
-      title: 'Yakin menghapus kamar?',
+      title:'Hapus Kamar',
+      text: 'Yakin menghapus kamar?',
       icon: 'question',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'Hapus'
+      confirmButtonText: 'Hapus',
+      cancelButtonText:'Batal'
+
     })
 
     if (isConfirmed) {

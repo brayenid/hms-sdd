@@ -27,13 +27,32 @@ class TransactionService {
     }
   }
 
-  async getTransactions(limit = 25, search = '', startDate, endDate) {
+  async removeTransactionById(id) {
+    try {
+      const query = {
+        text: `
+        DELETE FROM
+          settled_transactions
+        WHERE
+          id = $1
+        `,
+        values: [id]
+      }
+
+      await this._pool.query(query)
+    } catch (error) {
+      throw new Error(`Remove transaction : ${error.message}`)
+    }
+  }
+
+  async getTransactions(limit = 50, search = '', startDate, endDate) {
     try {
       const query = {
         text: `
         SELECT
           t.id,
           COALESCE(g.name, 'Nama Kosong') AS name,
+          g.phone,
           b.booked_by AS "bookedBy",
           b.start_date AS "startDate",
           b.end_date AS "endDate",
@@ -77,6 +96,7 @@ class TransactionService {
         SELECT
           t.id,
           g.name,
+          g.phone,
           g.address,
           g.city,
           b.id AS "bookingId",

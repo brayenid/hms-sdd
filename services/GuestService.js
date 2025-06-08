@@ -8,13 +8,13 @@ class GuestService {
 
   async addGuest(payload) {
     const id = `GUEST-${idgenerator(26)}`
-    const { idType, idNumber, name, gender, address, city, nationality, admin } = payload
+    const { idType, idNumber, name, gender, address, city, nationality, admin, phone } = payload
     try {
       const query = {
         text: `
-        INSERT INTO guests (id, identity_type, identity_number, name, gender, address, city, nationality, created_by, updated_by) 
-        VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $9)`,
-        values: [id, idType, idNumber, name, gender, address, city, nationality, admin]
+        INSERT INTO guests (id, identity_type, identity_number, name, gender, address, city, nationality, created_by, updated_by, phone) 
+        VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $9, $10)`,
+        values: [id, idType, idNumber, name, gender, address, city, nationality, admin, phone]
       }
 
       await this._pool.query(query)
@@ -24,13 +24,14 @@ class GuestService {
   }
 
   async updateGuest(payload) {
-    const { id, idType, idNumber, name, gender, address, city, nationality, admin } = payload
+    const { id, idType, idNumber, name, gender, address, city, nationality, admin, phone } = payload
     const currentTime = new Date()
 
     try {
       const query = {
         text: `
-          UPDATE guests
+          UPDATE 
+            guests
           SET 
             identity_type = $1,
             identity_number = $2,
@@ -40,9 +41,11 @@ class GuestService {
             city = $6,
             nationality = $7,
             updated_by = $8,
-            updated_at = $9
-          WHERE id = $10`,
-        values: [idType, idNumber, name, gender, address, city, nationality, admin, currentTime, id]
+            updated_at = $9,
+            phone = $11
+          WHERE 
+            id = $10`,
+        values: [idType, idNumber, name, gender, address, city, nationality, admin, currentTime, id, phone]
       }
 
       await this._pool.query(query)
@@ -113,20 +116,23 @@ class GuestService {
     const query = {
       text: `
       SELECT
-      id,
-      identity_type AS "idType",
-      identity_number AS "idNumber",
-      name,
-      gender,
-      address,
-      city,
-      nationality,
-      created_at AS "createdAt",
-      updated_at AS "updatedAt",
-      created_by AS "createdBy",
-      updated_by AS "updatedBy"
-      FROM guests
-      WHERE id = $1
+        id,
+        identity_type AS "idType",
+        identity_number AS "idNumber",
+        name,
+        gender,
+        address,
+        city,
+        phone,
+        nationality,
+        created_at AS "createdAt",
+        updated_at AS "updatedAt",
+        created_by AS "createdBy",
+        updated_by AS "updatedBy"
+      FROM 
+        guests
+      WHERE 
+        id = $1
       LIMIT 1`,
       values: [id]
     }

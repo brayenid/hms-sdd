@@ -213,8 +213,10 @@ class BookingController {
 
   async getBookInfoByCheckIn(req, res) {
     const { limit, start, end, search } = req.query
+    const limitNum = Number(limit) || 100
+
     try {
-      const response = await this.service.getBookInfoByCheckIn(limit, start, end, search)
+      const response = await this.service.getBookInfoByCheckIn(limitNum, start, end, search)
 
       return res.status(200).json({
         status: 'success',
@@ -230,8 +232,10 @@ class BookingController {
 
   async getBookInfoByCheckOut(req, res) {
     const { limit, start, end, search } = req.query
+    const limitNum = Number(limit) || 100
+
     try {
-      const response = await this.service.getBookInfoByCheckOut(limit, start, end, search)
+      const response = await this.service.getBookInfoByCheckOut(limitNum, start, end, search)
 
       return res.status(200).json({
         status: 'success',
@@ -357,7 +361,7 @@ class BookingController {
   }
 
   async checkOutBooking(req, res) {
-    const { fines, paid, discount, roomNumber, pay } = req.body
+    const { fines, paid, discount, roomNumber, pay, guest } = req.body
     const { bookId } = req.params
     const { id: admin } = req.session.user
 
@@ -369,6 +373,9 @@ class BookingController {
     }
 
     try {
+      if (guest === '0') {
+        throw new Error('Tindakan tidak sesuai')
+      }
       await this._pool.query('BEGIN') // TRANSACTION
 
       const { room: roomId, totalRoom, totalExtra } = await this.service.checkOutBooking(payload)
@@ -571,6 +578,62 @@ class BookingController {
       return res.status(200).json({
         status: 'success',
         message: 'Booking berhasil dilunasi'
+      })
+    } catch (error) {
+      await this._pool.query('ROLLBACK') // TRANSACTION
+
+      return res.status(400).json({
+        status: 'fail',
+        message: error.message
+      })
+    }
+  }
+
+  async undoCheckIn(req, res) {
+    const { id: admin } = req.session.user
+    const { bookId: id } = req.params
+
+    try {
+      await this._pool.query('BEGIN') // TRANSACTION
+
+      const bookInfo = await this.service.getBookInfoById(id)
+
+      await this.service.undoCheckIn({ admin, id, bookInfo })
+      await this.roomTransactionLogsService.removeRoomTransactionLogs(id)
+      await this.logService.addLog('Check In dibatalkan', admin)
+      await this._pool.query('COMMIT') // TRANSACTION
+
+      return res.status(200).json({
+        status: 'success',
+        message: 'Pembatalan Check In berhasil'
+      })
+    } catch (error) {
+      await this._pool.query('ROLLBACK') // TRANSACTION
+
+      return res.status(400).json({
+        status: 'fail',
+        message: error.message
+      })
+    }
+  }
+
+  async undoCheckOut(req, res) {
+    const { id: admin } = req.session.user
+    const { bookId, invoice } = req.body
+
+    try {
+      await this._pool.query('BEGIN') // TRANSACTION
+
+      await this.transactionService.removeTransactionById(invoice)
+      await this.roomTransactionLogsService.removeRoomTransactionLogs(bookId)
+      await this.service.undoCheckOut({ id: bookId, admin })
+      await this.logService.addLog('Check Out dibatalkan', admin)
+
+      await this._pool.query('COMMIT') // TRANSACTION
+
+      return res.status(200).json({
+        status: 'success',
+        message: 'Status Check Out dibatalkan'
       })
     } catch (error) {
       await this._pool.query('ROLLBACK') // TRANSACTION

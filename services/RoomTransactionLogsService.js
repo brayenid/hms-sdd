@@ -56,6 +56,24 @@ class RoomTransactionLogsService {
       throw new Error(`Get room transactions logs : ${error.message}`)
     }
   }
+
+  async removeRoomTransactionLogs(bookId) {
+    try {
+      const query = {
+        text: `
+        DELETE FROM
+          room_transaction_logs
+        WHERE
+          booking = $1
+        `,
+        values: [bookId]
+      }
+
+      await this._pool.query(query)
+    } catch (error) {
+      throw new Error(`Remove room transactions logs : ${error.message}`)
+    }
+  }
 }
 
 module.exports = RoomTransactionLogsService

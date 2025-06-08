@@ -7,6 +7,7 @@
         <thead class="table_fb__head">
           <tr>
             <th scope="col">Tamu</th>
+            <th scope="col">Telp.</th>
             <th scope="col">Kamar</th>
             <th scope="col">Check In</th>
             <th scope="col">Check Out</th>
@@ -30,6 +31,7 @@
       '/api/bookings/checkout?search=<%= query.search %>&start=<%= query.start %>&end=<%= query.end %>'
     )
     bookings = response.data.data
+
     const tableBody = document.querySelector('#table-cats tbody')
     if (bookings.length) {
       tableBody.innerHTML = ''
@@ -37,10 +39,11 @@
         const element = `
           <tr>
             <td>${data.name}</td>
-            <td>${data.room}</td>
-            <td>${data.startDate.split('-').reverse().join('-')}</td>
-            <td>${data.endDate.split('-').reverse().join('-')}</td>
-            <td><a class="text-blue-500 hover:underline" href="/checkout/${data.id}">Check-Out</a></td>
+            <td class="max-w-24"> ${data.phone}</td>
+            <td class="max-w-12">${data.roomNumber}</td>
+            <td class="w-40">${data.startDate.split('-').reverse().join('-')}</td>
+            <td class="w-40">${data.endDate.split('-').reverse().join('-')}</td>
+            <td class="w-40"><a class="text-blue-500 hover:underline" href="/checkout/${data.id}">Check-Out</a></td>
           </tr>
           `
         tableBody.innerHTML += element

@@ -26,7 +26,17 @@
               value="<%= query.search %>" />
           </div>
           <div class="relative flex items-center flex-[1] gap-2">
-            <label for="start-date" class="custom_label">Check-In</label>
+            <label for="limit" class="custom_label">Limit</label>
+            <input
+              type="number"
+              id="limit"
+              name="limit"
+              class="p-2 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+              placeholder="Limit"
+              value="<%= query.limit %>" />
+          </div>
+          <div class="relative flex items-center flex-[1] gap-2">
+            <label for="start-date" class="custom_label">In</label>
             <input
               type="date"
               id="start-date"
@@ -36,7 +46,7 @@
               value="<%= query.start %>" />
           </div>
           <div class="relative flex items-center flex-[1] gap-2">
-            <label for="end-date" class="custom_label">Check-Out</label>
+            <label for="end-date" class="custom_label">Out</label>
             <input
               type="date"
               id="end-date"

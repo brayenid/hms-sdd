@@ -39,7 +39,11 @@
           </div>
           <div class="lg:col-span-2 relative">
             <label for="room-guest">Tamu</label>
-            <input type="text" class="input-disable" disabled value="<%= transaction.name %>" />
+            <input
+              type="text"
+              class="input-disable"
+              disabled
+              value="<%= transaction.name %> - <%= transaction.phone %>" />
           </div>
           <div class="lg:col-span-4">
             <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-700" />
@@ -119,6 +123,7 @@
           target="_blank"
           >Cetak Meeting Room</a
         >
+        <button type="button" class="red" onclick="undoCheckOut()">Batalkan Check Out</button>
         <a
           href="/transaction"
           class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-red-600 text-white hover:bg-red-700 disabled:opacity-50 disabled:pointer-events-none dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600 cursor-pointer">
@@ -269,6 +274,9 @@
   </div>
 </section>
 <script>
+  const bookingId = '<%= transaction.bookingId %>'
+  const invoice = '<%= transaction.id %>'
+
   // NON-HISTORIS
   const nonHistoricInvoice = async () => {
     const { isConfirmed } = await Swal.fire({
@@ -287,6 +295,45 @@
       a.click()
     }
   }
+
+  // UNDO CHECKOUT
+  const undoCheckOut = async () => {
+    const { isConfirmed } = await Swal.fire({
+      title: 'Batalkan Check-Out',
+      icon: 'question',
+      text: 'Booking akan kembali ke menu check out, invoice dan logs penjualan kamar terkait akan dihapus.',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Batalkan',
+      cancelButtonText: 'Tutup'
+    })
+    if (isConfirmed) {
+      try {
+        await axios.patch(`/api/bookings/checkout/undo/${bookingId}`, {
+          bookId: bookingId,
+          invoice
+        })
+
+        await Swal.fire({
+          title: 'Berhasil!',
+          text: 'Check Out dibatalkan',
+          icon: 'success',
+          confirmButtonText: 'Oke!'
+        })
+        location.replace(`/checkout/${bookingId}`)
+      } catch (error) {
+        const errMessage = error.response.data.message
+        await Swal.fire({
+          title: 'Error!',
+          text: errMessage,
+          icon: 'error',
+          confirmButtonText: 'Tutup'
+        })
+      }
+    }
+  }
+
   // SUBMIT STUFF
   const formSubmit = document.querySelector('#form-checkin')
 

@@ -74,12 +74,14 @@
       const deposit = removeCurrency(formDeposit.querySelector('#deposit').value)
 
       const { isConfirmed } = await Swal.fire({
-        title: 'Yakin mengubah harga deposit?',
+        title: 'Ubah Harga',
+        text: 'Yakin mengubah harga deposit?',
         icon: 'question',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
-        confirmButtonText: 'Ubah'
+        confirmButtonText: 'Ubah',
+        cancelButtonText: 'Batal'
       })
 
       if (isConfirmed) {

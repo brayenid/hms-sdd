@@ -35,7 +35,7 @@
 
     let bookings = []
     const response = await axios.get(
-      '/api/bookings/checkin?search=<%= query.search %>&start=<%= query.start %>&end=<%= query.end %>'
+      '/api/bookings/checkin?search=<%= query.search %>&start=<%= query.start %>&end=<%= query.end %>&limit=<%= query.limit %>'
     )
     bookings = response.data.data
     console.log(bookings)
@@ -47,7 +47,7 @@
         const element = `
           <tr>
             <td>${data.bookedBy}</td>
-            <td>${data.room}</td>
+            <td>${data.roomNumber}</td>
             <td>${data.startDate.split('-').reverse().join('-')}</td>
             <td>${data.endDate.split('-').reverse().join('-')}</td>
             <td>${isSettled(data.paid, data.totalRoom + data.totalExtra - data.discount) ? 'Lunas' : 'Belum Lunas'}</td>

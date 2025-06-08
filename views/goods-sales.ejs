@@ -336,12 +336,14 @@
   const settlementBtn = document.querySelector('#settlement-btn')
   settlementBtn.addEventListener('click', async () => {
     const { isConfirmed } = await Swal.fire({
-      title: 'Yakin menyelesaikan transaksi?',
+      title: 'Menyelesaikan Transaksi',
+      text: 'Yakin menyelesaikan transaksi?',
       icon: 'question',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'Tambahkan'
+      confirmButtonText: 'Selesaikan',
+      cancelButtonText: 'Batal'
     })
 
     if (isConfirmed) {

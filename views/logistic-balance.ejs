@@ -129,12 +129,14 @@
       }
 
       const { isConfirmed } = await Swal.fire({
-        title: action === 'add' ? 'Yakin menambah saldo?' : 'Yakin mengurangi saldo?',
+        title: action === 'add' ? 'Tambah Saldo' : 'Kurangi Saldo',
+        text: action === 'add' ? 'Yakin menambah saldo?' : 'Yakin mengurangi saldo?',
         icon: 'question',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
-        confirmButtonText: action === 'add' ? 'Tambahkan' : 'Kurangi'
+        confirmButtonText: action === 'add' ? 'Tambahkan' : 'Kurangi',
+        cancelButtonText: 'Batal'
       })
 
       if (isConfirmed) {

@@ -26,7 +26,7 @@ class BookingService {
       discount,
       source
     } = payload
-    const id = `${generateId(25, 'ABCDEFGHIJKLMNOPRSTUVWXYZ1234567890')}-${Date.now()}`
+    const id = `${generateId(25, 'ABCDEFGHIJKLMNOPRSTUVWXYZ1234567890abcdefghijklmnopqrstuvwxyz')}-${Date.now()}`
     try {
       const query = {
         text: `
@@ -258,30 +258,37 @@ class BookingService {
     }
   }
 
-  async getBookInfoByCheckIn(limit = 50, startDate, endDate, search = '') {
+  async getBookInfoByCheckIn(limit = 100, startDate, endDate, search = '') {
     try {
       const query = {
         text: `
         SELECT 
-        bookings.id,
-        bookings.guest,
-        bookings.room,
-        bookings.booked_by AS "bookedBy",
-        bookings.start_date AS "startDate",
-        bookings.end_date AS "endDate",
-        bookings.deposit,
-        bookings.paid,
-        bookings.discount,
-        bookings.extra_person AS "extraPerson",
-        bookings.extra_bed AS "extraBed",
-        bookings.extra_decor AS "extraDecor",
-        bookings.extra_breakfast AS "extraBreakfast",
-        bookings.total_room AS "totalRoom",
-        bookings.total_extra AS "totalExtra",
-        bookings.created_by AS "receivedBy",
-        bookings.created_at AS "createdAt"
-        FROM bookings
-        WHERE checked_in = false AND (bookings.id ILIKE $2 OR bookings.booked_by ILIKE $2)
+          bookings.id,
+          bookings.guest,
+          bookings.room,
+          rooms.number AS "roomNumber",
+          bookings.booked_by AS "bookedBy",
+          bookings.start_date AS "startDate",
+          bookings.end_date AS "endDate",
+          bookings.deposit,
+          bookings.paid,
+          bookings.discount,
+          bookings.extra_person AS "extraPerson",
+          bookings.extra_bed AS "extraBed",
+          bookings.extra_decor AS "extraDecor",
+          bookings.extra_breakfast AS "extraBreakfast",
+          bookings.total_room AS "totalRoom",
+          bookings.total_extra AS "totalExtra",
+          bookings.created_by AS "receivedBy",
+          bookings.created_at AS "createdAt"
+        FROM 
+          bookings
+        JOIN
+          rooms
+        ON
+          bookings.room = rooms.id
+        WHERE 
+          checked_in = false AND (bookings.id ILIKE $2 OR bookings.booked_by ILIKE $2 OR rooms.number::text ILIKE $2)
         `,
         values: [limit, `%${search}%`]
       }
@@ -302,7 +309,7 @@ class BookingService {
     }
   }
 
-  async getBookInfoByCheckOut(limit = 50, startDate, endDate, search = '') {
+  async getBookInfoByCheckOut(limit = 100, startDate, endDate, search = '') {
     try {
       const query = {
         text: `
@@ -310,8 +317,9 @@ class BookingService {
           bookings.id,
           bookings.guest,
           guests.name,
+          guests.phone,
           bookings.room,
-          rooms.number,
+          rooms.number AS "roomNumber",
           bookings.booked_by AS "bookedBy",
           bookings.start_date AS "startDate",
           bookings.end_date AS "endDate",
@@ -335,7 +343,7 @@ class BookingService {
           guests
         ON bookings.guest = guests.id
         WHERE 
-          checked_out = false AND checked_in = true AND (bookings.id ILIKE $2 OR bookings.booked_by ILIKE $2 OR guests.name ILIKE $2)
+          checked_out = false AND checked_in = true AND (bookings.id ILIKE $2 OR bookings.booked_by ILIKE $2 OR guests.name ILIKE $2 OR rooms.number::text ILIKE $2)
         `,
         values: [limit, `%${search}%`]
       }
@@ -344,6 +352,62 @@ class BookingService {
          AND start_date >= $3 AND end_date <= $4
         `
         query.values.push(startDate, endDate)
+      }
+
+      query.text += ' ORDER BY end_date ASC LIMIT $1'
+
+      const { rows } = await this._pool.query(query)
+
+      return rows
+    } catch (error) {
+      throw new Error(`Get book info by check-out : ${error.message}`)
+    }
+  }
+
+  // FOR ROOM TOTAL CASE - OVERLAP SCHEDULE
+  async getBookInfoByCheckOutExt(limit = 100, startDate, endDate, search = '') {
+    try {
+      const query = {
+        text: `
+      SELECT 
+        bookings.id,
+        bookings.guest,
+        guests.name,
+        guests.phone,
+        bookings.room,
+        rooms.number AS "roomNumber",
+        bookings.booked_by AS "bookedBy",
+        bookings.start_date AS "startDate",
+        bookings.end_date AS "endDate",
+        bookings.deposit,
+        bookings.paid,
+        bookings.extra_person AS "extraPerson",
+        bookings.extra_bed AS "extraBed",
+        bookings.extra_decor AS "extraDecor",
+        bookings.extra_breakfast AS "extraBreakfast",
+        bookings.total_room AS "totalRoom",
+        bookings.total_extra AS "totalExtra",
+        bookings.created_by AS "receivedBy",
+        bookings.created_at AS "createdAt"
+      FROM 
+        bookings
+      JOIN
+        rooms ON bookings.room = rooms.id
+      JOIN
+        guests ON bookings.guest = guests.id
+      WHERE 
+        checked_out = false 
+        AND checked_in = true 
+        AND (bookings.id ILIKE $2 OR bookings.booked_by ILIKE $2 OR guests.name ILIKE $2 OR rooms.number::text ILIKE $2)
+      `,
+        values: [limit, `%${search}%`]
+      }
+
+      if (startDate && endDate) {
+        query.text += `
+        AND bookings.start_date <= $3 AND bookings.end_date >= $4
+      `
+        query.values.push(endDate, startDate)
       }
 
       query.text += ' ORDER BY end_date ASC LIMIT $1'
@@ -408,6 +472,7 @@ class BookingService {
           bookings.id,
           bookings.guest,
           COALESCE(guests.name, 'No Guest') AS "guestName",
+          guests.phone,
           bookings.room,
           bookings.booked_by AS "bookedBy",
           bookings.start_date AS "startDate",
@@ -690,6 +755,73 @@ class BookingService {
       await this._pool.query(query)
     } catch (error) {
       throw new Error(`Pay off book : ${error.message}`)
+    }
+  }
+
+  async undoCheckIn(payload) {
+    const currentTime = new Date()
+    // eslint-disable-next-line no-unused-vars
+    const { admin, id, bookInfo } = payload
+
+    try {
+      // const basedExtraPerson = (await this._pool.query("SELECT * FROM extra_price WHERE extra = 'person'")).rows[0]
+      //   .price
+      // const basedExtraBed = (await this._pool.query("SELECT * FROM extra_price WHERE extra = 'bed'")).rows[0].price
+      // const basedExtraBf = (await this._pool.query("SELECT * FROM extra_price WHERE extra = 'breakfast'")).rows[0].price
+
+      // const accumExtra =
+      //   bookInfo.extraPerson * basedExtraPerson +
+      //   bookInfo.extraBed * basedExtraBed +
+      //   bookInfo.extraBreakfast * basedExtraBf
+
+      const query = {
+        text: `
+        UPDATE 
+          bookings
+        SET
+          guest = 0,
+          extra_person = 0,
+          extra_bed = 0,
+          extra_breakfast = 0,
+          checked_in = false,
+          updated_at = $1,
+          updated_by = $2,
+          paid = 0
+        WHERE
+          id = $3
+        `,
+        values: [currentTime, admin, id]
+      }
+
+      await this._pool.query(query)
+    } catch (error) {
+      throw new Error(`Undo Check in booking : ${error.message}`)
+    }
+  }
+
+  async undoCheckOut(payload) {
+    const currentTime = new Date()
+    const { admin, id } = payload
+
+    try {
+      const query = {
+        text: `
+        UPDATE 
+          bookings
+        SET
+          checked_out = false,
+          updated_at = $1,
+          updated_by = $2,
+          paid = 0
+        WHERE
+          id = $3
+        `,
+        values: [currentTime, admin, id]
+      }
+
+      await this._pool.query(query)
+    } catch (error) {
+      throw new Error(`Undo Check Out booking : ${error.message}`)
     }
   }
 }

@@ -68,7 +68,7 @@
       <% if (response.length) { %> <% response.forEach(res => { %>
       <tr>
         <td class="py-2 px-4 border-b dark:border-gray-600 text-center"><%= res.name %></td>
-        <td class="py-2 px-4 border-b dark:border-gray-600 text-center">Room # <%= res.number %></td>
+        <td class="py-2 px-4 border-b dark:border-gray-600 text-center">Room # <%= res.roomNumber %></td>
         <td class="py-2 px-4 border-b dark:border-gray-600 text-center">
           <%= res.startDate.split('-').reverse().join('-') %>
         </td>

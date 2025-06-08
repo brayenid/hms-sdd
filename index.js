@@ -11,6 +11,9 @@ const pgPool = new Pool()
 const cron = require('node-cron')
 const { clearOldLogs } = require('./globals/logs-control')
 
+const logger = require('./globals/logger')
+const errorViewer = require('./controllers/_logs/error')
+
 app.use(
   session({
     secret: config.session.key,
@@ -32,19 +35,37 @@ app.use(expressEjsLayouts)
 app.set('layout', 'partials/layout')
 app.use(express.json())
 app.use('/', router)
-app.use((req, res) => {
-  return res.status(404).json({
-    status: 'fail',
-    message: 'Resource invalid/unavailable'
+
+cron.schedule('10 15 * * *', async () => {
+  try {
+    await backupDb('backup', 7)
+  } catch (err) {
+    console.error('Cron Error (backup):', err)
+  }
+})
+
+cron.schedule('10 15 * * *', async () => {
+  try {
+    await clearOldLogs()
+  } catch (err) {
+    console.error('Cron Error (log cleanup):', err)
+  }
+})
+
+app.get('/dev/logs', errorViewer)
+
+app.use((err, req, res, next) => {
+  logger.error({
+    message: err.message,
+    stack: err.stack,
+    route: req.originalUrl,
+    time: new Date().toISOString()
   })
-})
 
-cron.schedule('0 15 * * *', () => {
-  backupDb('backup', 7)
-})
-
-cron.schedule('0 15 * * *', async () => {
-  clearOldLogs()
+  return res.status(err.status).json({
+    status: 'fail',
+    message: err.message
+  })
 })
 
 app.listen(config.port, () => {
