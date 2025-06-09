@@ -388,26 +388,27 @@ class BookingService {
         bookings.total_room AS "totalRoom",
         bookings.total_extra AS "totalExtra",
         bookings.created_by AS "receivedBy",
-        bookings.created_at AS "createdAt"
+        bookings.created_at AS "createdAt",
+        bookings.checked_out AS "checkout"
       FROM 
         bookings
       JOIN
         rooms ON bookings.room = rooms.id
       JOIN
         guests ON bookings.guest = guests.id
-      WHERE 
-        checked_out = false 
-        AND checked_in = true 
-        AND (bookings.id ILIKE $2 OR bookings.booked_by ILIKE $2 OR guests.name ILIKE $2 OR rooms.number::text ILIKE $2)
+      WHERE
+        (bookings.id ILIKE $2 OR bookings.booked_by ILIKE $2 OR guests.name ILIKE $2 OR rooms.number::text ILIKE $2)
       `,
         values: [limit, `%${search}%`]
       }
 
+      // const savedQ = AND bookings.start_date <= $3 AND bookings.end_date >= $4
+
       if (startDate && endDate) {
         query.text += `
-        AND bookings.start_date <= $3 AND bookings.end_date >= $4
+        AND start_date >= $3 AND end_date <= $4
       `
-        query.values.push(endDate, startDate)
+        query.values.push(startDate, endDate)
       }
 
       query.text += ' ORDER BY end_date ASC LIMIT $1'
