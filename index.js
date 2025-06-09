@@ -56,13 +56,13 @@ app.get('/dev/logs', errorViewer)
 
 app.use((err, req, res, next) => {
   logger.error({
-    message: err.message,
-    stack: err.stack,
-    route: req.originalUrl,
+    message: err.message ?? 'No message!',
+    stack: err.stack ?? 'No Stack',
+    route: req.originalUrl ?? 'No Original URL',
     time: new Date().toISOString()
   })
 
-  return res.status(err.status).json({
+  return res.status(500).json({
     status: 'fail',
     message: err.message
   })
