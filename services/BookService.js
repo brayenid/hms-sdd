@@ -406,9 +406,9 @@ class BookingService {
 
       if (startDate && endDate) {
         query.text += `
-        AND start_date >= $3 AND end_date <= $4
-      `
-        query.values.push(startDate, endDate)
+    AND bookings.start_date <= $3 AND bookings.end_date >= $4
+  `
+        query.values.push(endDate, startDate) // urutan sesuai parameter di atas
       }
 
       query.text += ' ORDER BY end_date ASC LIMIT $1'
