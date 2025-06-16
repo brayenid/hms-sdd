@@ -118,6 +118,7 @@
   <table class="min-w-full text-gray-700 dark:text-white text-xs mt-5">
     <thead>
       <tr>
+        <th class="py-2 px-4 border-b dark:border-gray-600"></th>
         <th class="py-2 px-4 border-b dark:border-gray-600">Tamu</th>
         <th class="py-2 px-4 border-b dark:border-gray-600">Nomor Kamar</th>
         <th class="py-2 px-4 border-b dark:border-gray-600">Check In</th>
@@ -129,9 +130,10 @@
       </tr>
     </thead>
     <tbody>
-      <% if (response.length) { %> <% response.forEach(res => { %>
+      <% if (response.length) { %> <% response.forEach((res,i) => { %>
       <tr>
-        <td class="py-2 px-4 border-b dark:border-gray-600 truncate max-w-52" title="<%= res.name %>">
+        <td class="py-2 px-4 border-b dark:border-gray-600 truncate"><%= i+1 %></td>
+        <td class="py-2 px-4 border-b dark:border-gray-600 truncate max-w-44" title="<%= res.name %>">
           <%= res.name %>
         </td>
         <td class="py-2 px-4 border-b dark:border-gray-600 text-center">Room # <%= res.roomNumber %></td>
