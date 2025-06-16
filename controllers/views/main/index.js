@@ -1626,7 +1626,7 @@ class Dashboard {
   _calculateActiveRoomTotals(data) {
     return data.reduce(
       (acc, item) => {
-        acc.roomTotal += item.totalRoom || 0
+        acc.roomTotal += item.totalUsedRoom || 0
         acc.extraTotal += item.totalExtra || 0
         return acc
       },

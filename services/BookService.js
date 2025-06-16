@@ -369,55 +369,62 @@ class BookingService {
     try {
       const query = {
         text: `
-      SELECT 
-        bookings.id,
-        bookings.guest,
-        guests.name,
-        guests.phone,
-        bookings.room,
-        rooms.number AS "roomNumber",
-        bookings.booked_by AS "bookedBy",
-        bookings.start_date AS "startDate",
-        bookings.end_date AS "endDate",
-        bookings.deposit,
-        bookings.paid,
-        bookings.extra_person AS "extraPerson",
-        bookings.extra_bed AS "extraBed",
-        bookings.extra_decor AS "extraDecor",
-        bookings.extra_breakfast AS "extraBreakfast",
-        bookings.total_room AS "totalRoom",
-        bookings.total_extra AS "totalExtra",
-        bookings.created_by AS "receivedBy",
-        bookings.created_at AS "createdAt",
-        bookings.checked_out AS "checkout"
-      FROM 
-        bookings
-      JOIN
-        rooms ON bookings.room = rooms.id
-      JOIN
-        guests ON bookings.guest = guests.id
-      WHERE
-        (bookings.id ILIKE $2 OR bookings.booked_by ILIKE $2 OR guests.name ILIKE $2 OR rooms.number::text ILIKE $2)
+        SELECT 
+          bookings.id,
+          bookings.guest,
+          guests.name,
+          guests.phone,
+          bookings.room,
+          rooms.number AS "roomNumber",
+          rooms_cat.price AS "roomUnitPrice",
+          bookings.booked_by AS "bookedBy",
+          bookings.start_date AS "startDate",
+          bookings.end_date AS "endDate",
+          bookings.deposit,
+          bookings.paid,
+          bookings.extra_person AS "extraPerson",
+          bookings.extra_bed AS "extraBed",
+          bookings.extra_decor AS "extraDecor",
+          bookings.extra_breakfast AS "extraBreakfast",
+          bookings.total_room AS "totalRoom",
+          bookings.total_extra AS "totalExtra",
+          bookings.created_by AS "receivedBy",
+          bookings.created_at AS "createdAt",
+          bookings.checked_out AS "checkout",
+
+          GREATEST(bookings.start_date::date, $3::date) AS "effectiveStart",
+          LEAST(bookings.end_date::date, $4::date) AS "effectiveEnd",
+
+          CASE 
+            WHEN bookings.start_date::date > $4::date OR bookings.end_date::date < $3::date THEN 0
+            ELSE (LEAST(bookings.end_date::date, $4::date) - GREATEST(bookings.start_date::date, $3::date) + 1)
+          END AS "stayNights",
+
+          CASE 
+            WHEN bookings.start_date::date > $4::date OR bookings.end_date::date < $3::date THEN 0
+            ELSE rooms_cat.price * (LEAST(bookings.end_date::date, $4::date) - GREATEST(bookings.start_date::date, $3::date) + 1)
+          END AS "totalUsedRoom"
+
+        FROM 
+          bookings
+        JOIN rooms ON bookings.room = rooms.id
+        JOIN guests ON bookings.guest = guests.id
+        JOIN rooms_cat ON rooms.category = rooms_cat.id
+        WHERE
+          (bookings.id ILIKE $2 OR bookings.booked_by ILIKE $2 OR guests.name ILIKE $2 OR rooms.number::text ILIKE $2)
+          AND bookings.start_date::date <= $4::date
+          AND bookings.end_date::date >= $3::date
+        ORDER BY bookings.end_date ASC
+        LIMIT $1
       `,
-        values: [limit, `%${search}%`]
+        values: [limit, `%${search}%`, startDate, endDate]
       }
-
-      // const savedQ = AND bookings.start_date <= $3 AND bookings.end_date >= $4
-
-      if (startDate && endDate) {
-        query.text += `
-    AND bookings.start_date <= $3 AND bookings.end_date >= $4
-  `
-        query.values.push(endDate, startDate) // urutan sesuai parameter di atas
-      }
-
-      query.text += ' ORDER BY end_date ASC LIMIT $1'
 
       const { rows } = await this._pool.query(query)
 
       return rows
     } catch (error) {
-      throw new Error(`Get book info by check-out : ${error.message}`)
+      throw new Error(`Get book info by check-out: ${error.message}`)
     }
   }
 

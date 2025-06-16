@@ -1583,6 +1583,10 @@ input:checked + .toggle-bg {
   max-width: 24rem;
 }
 
+.max-w-52 {
+  max-width: 13rem;
+}
+
 .flex-1 {
   flex: 1 1 0%;
 }
@@ -2676,11 +2680,6 @@ input:checked + .toggle-bg {
 .text-yellow-800 {
   --tw-text-opacity: 1;
   color: rgb(114 59 19 / var(--tw-text-opacity));
-}
-
-.text-rose-600 {
-  --tw-text-opacity: 1;
-  color: rgb(225 29 72 / var(--tw-text-opacity));
 }
 
 .antialiased {

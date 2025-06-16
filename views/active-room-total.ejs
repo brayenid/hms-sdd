@@ -38,9 +38,8 @@
     </svg>
     <span class="sr-only">Info</span>
     <div>
-      Masukan rentang tanggal untuk melihat kamar aktif. Jika tanggal hari ini adalah tanggal 1, maka masukan tanggal
-      check-in tanggal 1 dan check-out tanggal 2.
-      <strong>Jika ingin melihat semua kamar aktif, kosongkan rentang tanggal.</strong>
+      Masukan rentang tanggal untuk melihat pendapatan kamar. Misal ingin melihat pendapatan dalam tanggal 7 Bulan 7,
+      maka buat tanggal check-in 7 dan check-out 7.
     </div>
   </div>
   <div class="mt-6 flex justify-end gap-x-3 no-print">
@@ -123,6 +122,7 @@
         <th class="py-2 px-4 border-b dark:border-gray-600">Nomor Kamar</th>
         <th class="py-2 px-4 border-b dark:border-gray-600">Check In</th>
         <th class="py-2 px-4 border-b dark:border-gray-600">Check Out</th>
+        <th class="py-2 px-4 border-b dark:border-gray-600">Kamar Terpakai (Hari)</th>
         <th class="py-2 px-4 border-b dark:border-gray-600">Harga Kamar</th>
         <th class="py-2 px-4 border-b dark:border-gray-600">Harga Ekstra</th>
         <th class="py-2 px-4 border-b dark:border-gray-600">Checkout</th>
@@ -131,7 +131,9 @@
     <tbody>
       <% if (response.length) { %> <% response.forEach(res => { %>
       <tr>
-        <td class="py-2 px-4 border-b dark:border-gray-600"><%= res.name %></td>
+        <td class="py-2 px-4 border-b dark:border-gray-600 truncate max-w-52" title="<%= res.name %>">
+          <%= res.name %>
+        </td>
         <td class="py-2 px-4 border-b dark:border-gray-600 text-center">Room # <%= res.roomNumber %></td>
         <td class="py-2 px-4 border-b dark:border-gray-600 text-center">
           <%= res.startDate.split('-').reverse().join('-') %>
@@ -139,7 +141,8 @@
         <td class="py-2 px-4 border-b dark:border-gray-600 text-center">
           <%= res.endDate.split('-').reverse().join('-') %>
         </td>
-        <td class="py-2 px-4 border-b dark:border-gray-600 text-center"><%= addSeparator(res.totalRoom) %></td>
+        <td class="py-2 px-4 border-b dark:border-gray-600 text-center"><%= res.stayNights %></td>
+        <td class="py-2 px-4 border-b dark:border-gray-600 text-center"><%= addSeparator(res.totalUsedRoom) %></td>
         <td class="py-2 px-4 border-b dark:border-gray-600 text-center"><%= addSeparator(res.totalExtra) %></td>
         <td class="py-2 px-4 border-b dark:border-gray-600 text-center">
           <%- res.checkout ? '<span class="text-red-600">Sudah</span>' : '<span>Belum</span>' %>
@@ -148,17 +151,18 @@
       <% }) %>
 
       <tr>
-        <td class="py-2 px-4 border-b dark:border-gray-600 text-center" colspan="4">Total</td>
+        <td class="py-2 px-4 border-b dark:border-gray-600 text-center" colspan="5">Total</td>
         <td class="py-2 px-4 border-b dark:border-gray-600 text-center">
           <%= addSeparator(calculateRoomTotal.roomTotal) %>
         </td>
         <td class="py-2 px-4 border-b dark:border-gray-600 text-center">
           <%= addSeparator(calculateRoomTotal.extraTotal) %>
         </td>
+        <td class="py-2 px-4 border-b dark:border-gray-600 text-center"></td>
       </tr>
       <% } else { %>
       <tr>
-        <td class="py-2 px-4 border-b dark:border-gray-600 text-center" colspan="6">Tidak ada data</td>
+        <td class="py-2 px-4 border-b dark:border-gray-600 text-center" colspan="7">Tidak ada data</td>
       </tr>
       <% } %>
     </tbody>
