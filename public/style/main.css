@@ -1583,10 +1583,6 @@ input:checked + .toggle-bg {
   max-width: 24rem;
 }
 
-.max-w-52 {
-  max-width: 13rem;
-}
-
 .flex-1 {
   flex: 1 1 0%;
 }

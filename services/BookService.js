@@ -396,13 +396,19 @@ class BookingService {
           LEAST(bookings.end_date::date, $4::date) AS "effectiveEnd",
 
           CASE 
-            WHEN bookings.start_date::date > $4::date OR bookings.end_date::date < $3::date THEN 0
-            ELSE (LEAST(bookings.end_date::date, $4::date) - GREATEST(bookings.start_date::date, $3::date) + 1)
+            WHEN bookings.start_date::date > $4::date OR bookings.end_date::date <= $3::date THEN 0
+            ELSE GREATEST(
+              (LEAST(bookings.end_date::date, $4::date) - GREATEST(bookings.start_date::date, $3::date)),
+              1
+            )
           END AS "stayNights",
 
           CASE 
-            WHEN bookings.start_date::date > $4::date OR bookings.end_date::date < $3::date THEN 0
-            ELSE rooms_cat.price * (LEAST(bookings.end_date::date, $4::date) - GREATEST(bookings.start_date::date, $3::date) + 1)
+            WHEN bookings.start_date::date > $4::date OR bookings.end_date::date <= $3::date THEN 0
+            ELSE rooms_cat.price * GREATEST(
+              (LEAST(bookings.end_date::date, $4::date) - GREATEST(bookings.start_date::date, $3::date)),
+              1
+            )
           END AS "totalUsedRoom"
 
         FROM 
@@ -413,7 +419,7 @@ class BookingService {
         WHERE
           (bookings.id ILIKE $2 OR bookings.booked_by ILIKE $2 OR guests.name ILIKE $2 OR rooms.number::text ILIKE $2)
           AND bookings.start_date::date <= $4::date
-          AND bookings.end_date::date >= $3::date
+          AND bookings.end_date::date > $3::date
         ORDER BY bookings.end_date ASC
         LIMIT $1
       `,
@@ -421,9 +427,9 @@ class BookingService {
       }
 
       const { rows } = await this._pool.query(query)
-
       return rows
     } catch (error) {
+      console.error('Error on getBookInfoByCheckOutExt:', error)
       throw new Error(`Get book info by check-out: ${error.message}`)
     }
   }
